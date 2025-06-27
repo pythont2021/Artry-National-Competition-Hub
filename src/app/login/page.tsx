@@ -1,33 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogIn } from "lucide-react";
 import { login } from "./actions";
+import { Label } from "@/components/ui/label";
 
-const passwordFormSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(1, {
-    message: "Password is required.",
-  }),
-});
 
 const otpFormSchema = z.object({
   mobile: z.string().regex(/^\d{10}$/, {
@@ -35,16 +23,19 @@ const otpFormSchema = z.object({
   }),
 });
 
+function LoginButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" size="lg" disabled={pending}>
+      {pending ? 'Logging in...' : 'Login with Password'}
+    </Button>
+  );
+}
+
 export default function LoginPage() {
   const { toast } = useToast();
-
-  const passwordForm = useForm<z.infer<typeof passwordFormSchema>>({
-    resolver: zodResolver(passwordFormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  
+  const [state, formAction] = useFormState(login, undefined);
 
   const otpForm = useForm<z.infer<typeof otpFormSchema>>({
     resolver: zodResolver(otpFormSchema),
@@ -53,23 +44,15 @@ export default function LoginPage() {
     },
   });
 
-  const { isSubmitting } = passwordForm.formState;
-
-  async function onPasswordSubmit(values: z.infer<typeof passwordFormSchema>) {
-    const formData = new FormData();
-    formData.append("email", values.email);
-    formData.append("password", values.password);
-    
-    const result = await login(formData);
-
-    if (result?.error) {
+  useEffect(() => {
+    if (state?.error) {
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: result.error,
+        description: state.error,
       });
     }
-  }
+  }, [state, toast]);
   
   function onOtpSubmit(values: z.infer<typeof otpFormSchema>) {
     console.log("OTP login:", values);
@@ -96,39 +79,17 @@ export default function LoginPage() {
               <TabsTrigger value="otp">OTP</TabsTrigger>
             </TabsList>
             <TabsContent value="password">
-              <Form {...passwordForm}>
-                <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6 pt-4">
-                  <FormField
-                    control={passwordForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="name@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={passwordForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-                    {isSubmitting ? 'Logging in...' : 'Login with Password'}
-                  </Button>
-                </form>
-              </Form>
+              <form action={formAction} className="space-y-6 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" name="email" placeholder="name@example.com" type="email" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input id="password" name="password" placeholder="••••••••" type="password" required />
+                </div>
+                <LoginButton />
+              </form>
             </TabsContent>
             <TabsContent value="otp">
                <Form {...otpForm}>
