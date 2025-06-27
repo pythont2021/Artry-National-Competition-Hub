@@ -247,7 +247,9 @@ const formSchema = z.object({
   grade: z.string().min(1, { message: "Class/Grade is required." }),
   address: z.string().min(10, { message: "Address must be at least 10 characters." }),
   altContact: z.string().regex(/^\d{10}$/, { message: "Please enter a valid 10-digit mobile number." }).optional().or(z.literal('')),
-  profilePhoto: z.any().optional(),
+  profilePhoto: z.any().refine((file) => file, {
+    message: "Profile photo is required.",
+  }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string(),
   terms: z.boolean().refine((val) => val === true, {
@@ -310,6 +312,7 @@ export default function ParticipantRegisterPage() {
       terms: false,
       ageGroup: "Select date of birth to see age group.",
       participantCategory: undefined,
+      profilePhoto: undefined,
     },
   });
   
@@ -655,7 +658,7 @@ export default function ParticipantRegisterPage() {
                 name="profilePhoto"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Profile Photo (Optional)</FormLabel>
+                    <FormLabel>Profile Photo</FormLabel>
                     <div className="flex items-center gap-4">
                       <Dialog>
                           <DialogTrigger asChild>
@@ -727,19 +730,18 @@ export default function ParticipantRegisterPage() {
                                       if (fileInputRef.current) {
                                         fileInputRef.current.value = "";
                                       }
-                                  }}
-                              >
-                                  <XCircle className="h-4 w-4 text-destructive" />
+                                      setProfilePhotoPreview(null);
+                                  }}>
+                                    <XCircle className="h-4 w-4" />
                               </Button>
                           </div>
                       )}
-
                     </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="terms"
@@ -764,9 +766,7 @@ export default function ParticipantRegisterPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" size="lg">
-                Create Account
-              </Button>
+              <Button type="submit" className="w-full" size="lg">Create Account</Button>
             </form>
           </Form>
         </CardContent>
