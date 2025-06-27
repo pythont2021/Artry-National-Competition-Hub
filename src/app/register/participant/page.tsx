@@ -279,14 +279,16 @@ export default function ParticipantRegisterPage() {
     if (dob) {
       const calculatedAge = differenceInYears(new Date(), dob);
       setAge(calculatedAge);
-      if (calculatedAge >= 10 && calculatedAge <= 14) {
-        setAgeGroup("10-14 years");
-      } else if (calculatedAge >= 15 && calculatedAge <= 18) {
-        setAgeGroup("15-18 years");
-      } else if (calculatedAge >= 19 && calculatedAge <= 22) {
-        setAgeGroup("19-22 years");
+      if (calculatedAge >= 9 && calculatedAge <= 12) {
+        setAgeGroup("Junior (9-12 years)");
+      } else if (calculatedAge >= 13 && calculatedAge <= 17) {
+        setAgeGroup("Intermediate (13-17 years)");
+      } else if (calculatedAge >= 18 && calculatedAge <= 22) {
+        setAgeGroup("Senior (18-22 years)");
+      } else if (calculatedAge > 22) {
+        setAgeGroup("Artist (23+ years)");
       } else {
-        setAgeGroup("Not in eligible age range");
+        setAgeGroup("Not in eligible age range (must be 9+)");
       }
     }
   }, [dob]);
