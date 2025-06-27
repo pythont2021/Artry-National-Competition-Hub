@@ -26,14 +26,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Combobox } from "@/components/ui/combobox";
 
-const schools = [
-  { value: "delhi-public-school", label: "Delhi Public School" },
-  { value: "kendriya-vidyalaya", label: "Kendriya Vidyalaya" },
-  { value: "dav-public-school", label: "DAV Public School" },
-  { value: "the-shriram-school", label: "The Shriram School" },
-  { value: "bombay-scottish-school", label: "Bombay Scottish School" },
-];
-
 const boards = [
   {
     heading: "National Boards",
@@ -243,7 +235,7 @@ const formSchema = z.object({
   dob: z.date({
     required_error: "A date of birth is required.",
   }),
-  school: z.string({ required_error: "Please select a school." }),
+  school: z.string().min(1, { message: "School/College is required." }),
   grade: z.string().min(1, { message: "Class/Grade is required." }),
   board: z.string({ required_error: "Please select a board." }),
   address: z.string().min(10, { message: "Address must be at least 10 characters." }),
@@ -271,7 +263,7 @@ export default function ParticipantRegisterPage() {
       name: "",
       email: "",
       mobile: "",
-      school: undefined,
+      school: "",
       grade: "",
       board: undefined,
       address: "",
@@ -414,9 +406,11 @@ export default function ParticipantRegisterPage() {
                   control={form.control}
                   name="school"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem>
                       <FormLabel>School/College</FormLabel>
-                       <Combobox options={schools} placeholder="Search school..." emptyMessage="No school found." {...field} />
+                      <FormControl>
+                        <Input placeholder="e.g., Delhi Public School" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
