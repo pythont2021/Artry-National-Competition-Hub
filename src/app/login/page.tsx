@@ -60,22 +60,13 @@ export default function LoginPage() {
     formData.append("email", values.email);
     formData.append("password", values.password);
     
-    try {
-      const result = await login(formData);
+    const result = await login(formData);
 
-      if (result?.error) {
-        toast({
-          variant: "destructive",
-          title: "Login Failed",
-          description: result.error,
-        });
-      }
-    } catch (error) {
-      console.error("Login submission error:", error);
+    if (result?.error) {
       toast({
         variant: "destructive",
-        title: "An unexpected error occurred",
-        description: "Please try again later.",
+        title: "Login Failed",
+        description: result.error,
       });
     }
   }

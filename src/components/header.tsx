@@ -29,6 +29,7 @@ import {
 import { Logo } from "./logo";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { logout } from "@/app/login/actions";
 
 const navLinks = [
   { href: "/competition", label: "Home", icon: Sparkles },
@@ -59,7 +60,7 @@ const navLinks = [
   { href: "/competition/vote", label: "Vote", icon: ThumbsUp },
 ];
 
-export function Header() {
+export function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
   const pathname = usePathname();
 
   const renderLink = (link: any, isMobile = false) => {
@@ -172,12 +173,27 @@ export function Header() {
           </nav>
         </div>
         <div className="flex items-center justify-end gap-2">
-          <Button asChild variant="ghost">
-            <Link href="/login">Login</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/register">Register</Link>
-          </Button>
+          {isLoggedIn ? (
+            <>
+              <Button asChild>
+                <Link href="/dashboard/participant">Dashboard</Link>
+              </Button>
+              <form action={logout}>
+                <Button type="submit" variant="ghost">
+                  Logout
+                </Button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="ghost">
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/register">Register</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

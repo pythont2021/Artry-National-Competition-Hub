@@ -24,3 +24,8 @@ export async function login(formData: FormData) {
   // If credentials don't match, return an error message.
   return { error: 'Invalid email or password. Please try again.' };
 }
+
+export async function logout() {
+  cookies().delete('auth-token');
+  redirect('/login');
+}
