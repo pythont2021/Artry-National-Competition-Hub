@@ -28,6 +28,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import Image from "next/image";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const boards = [
   {
@@ -239,6 +240,7 @@ const formSchema = z.object({
     required_error: "A date of birth is required.",
   }),
   ageGroup: z.string().optional(),
+  participantCategory: z.string().optional(),
   school: z.string().min(1, { message: "School/College is required." }),
   grade: z.string().min(1, { message: "Class/Grade is required." }),
   board: z.string({ required_error: "Please select a board." }),
@@ -251,7 +253,20 @@ const formSchema = z.object({
   terms: z.boolean().refine((val) => val === true, {
     message: "You must accept the terms and conditions.",
   }),
-}).refine((data) => data.password === data.confirmPassword, {
+}).refine(
+  (data) => {
+    if (!data.dob) return true;
+    const age = differenceInYears(new Date(), data.dob);
+    if (age >= 18 && age <= 22) {
+      return !!data.participantCategory;
+    }
+    return true;
+  },
+  {
+    message: "Please select a participant category.",
+    path: ["participantCategory"],
+  }
+).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
@@ -260,6 +275,7 @@ export default function ParticipantRegisterPage() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
+  const [showCategoryChoice, setShowCategoryChoice] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -274,7 +290,8 @@ export default function ParticipantRegisterPage() {
       password: "",
       confirmPassword: "",
       terms: false,
-      ageGroup: "Select date of birth to see age group."
+      ageGroup: "Select date of birth to see age group.",
+      participantCategory: undefined,
     },
   });
   
@@ -285,18 +302,33 @@ export default function ParticipantRegisterPage() {
     if (dob) {
       const calculatedAge = differenceInYears(new Date(), dob);
       let group = "";
-      if (calculatedAge >= 9 && calculatedAge <= 12) {
-        group = "Junior (9-12 years)";
-      } else if (calculatedAge >= 13 && calculatedAge <= 18) {
-        group = "Intermediate (13-18 years)";
-      } else if (calculatedAge >= 19 && calculatedAge <= 22) {
-        group = "Senior (19-22 years)";
-      } else if (calculatedAge > 22) {
-        group = "Artist (23+ years)";
+      // Reset dependent fields and state
+      setShowCategoryChoice(false);
+      form.setValue("participantCategory", undefined);
+      form.clearErrors("participantCategory");
+
+      if (calculatedAge >= 18 && calculatedAge <= 22) {
+        setShowCategoryChoice(true);
+        group = "Please select your category below.";
+        form.setValue("ageGroup", group);
       } else {
-        group = "Not in eligible age range (must be 9+)";
+        setShowCategoryChoice(false);
+        if (calculatedAge >= 9 && calculatedAge <= 12) {
+          group = "Junior (9-12 years)";
+        } else if (calculatedAge >= 13 && calculatedAge <= 17) {
+          group = "Intermediate (13-17 years)";
+        } else if (calculatedAge > 22) {
+          group = "Artist (23+ years)";
+        } else {
+          group = "Not in eligible age range (must be 9+)";
+        }
+        form.setValue("ageGroup", group);
       }
-      form.setValue("ageGroup", group);
+    } else {
+      setShowCategoryChoice(false);
+      form.setValue("ageGroup", "Select date of birth to see age group.");
+      form.setValue("participantCategory", undefined);
+      form.clearErrors("participantCategory");
     }
   }, [dob, form]);
 
@@ -433,6 +465,43 @@ export default function ParticipantRegisterPage() {
                     )}
                   />
               </div>
+
+              {showCategoryChoice && (
+                <FormField
+                  control={form.control}
+                  name="participantCategory"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-md border p-4">
+                      <FormLabel>Participant Category</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col space-y-1"
+                        >
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="senior" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Senior (18-22 years)
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="artist" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Artist (18+ years, higher experience)
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <FormField
