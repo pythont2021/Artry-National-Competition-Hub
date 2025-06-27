@@ -1,15 +1,8 @@
 import { MotivationalMessage } from "@/components/motivational-message";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { cookies } from "next/headers";
 
 export default function ParticipantDashboard() {
-  const isLoggedIn = !!cookies().get('auth-token')?.value;
-
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header isLoggedIn={isLoggedIn} />
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h1 className="font-headline text-4xl font-bold">Welcome, Artist!</h1>
           <p className="text-muted-foreground font-body text-lg mt-2">Here's a summary of your journey with us.</p>
@@ -39,8 +32,6 @@ export default function ParticipantDashboard() {
             </ul>
           </div>
         </div>
-      </main>
-      <Footer />
     </div>
   );
 }
