@@ -29,7 +29,7 @@ import {
 import { Logo } from "./logo";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { logout } from "@/app/login/actions";
+import { logout } from "@/app/(main)/login/actions";
 
 const navLinks = [
   { href: "/competition", label: "Home", icon: Sparkles },

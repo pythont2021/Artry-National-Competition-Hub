@@ -2,7 +2,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { cookies } from "next/headers";
 
-export default function DashboardLayout({
+export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
