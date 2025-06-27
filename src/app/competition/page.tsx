@@ -38,7 +38,7 @@ export default function CompetitionHome() {
               <Link href="/register">Register Now</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="/competition/vote">View Gallery</Link>
+              <Link href="/competition/gallery">View Gallery</Link>
             </Button>
           </div>
         </div>
