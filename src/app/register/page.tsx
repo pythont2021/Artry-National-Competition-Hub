@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserPlus } from "lucide-react";
 
@@ -32,8 +33,12 @@ const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
   school: z.string().min(2, { message: "School name is required." }),
   ageGroup: z.string({ required_error: "Please select an age group." }),
+  artCategory: z.string({ required_error: "Please select your primary art category." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string(),
+  terms: z.boolean().refine((val) => val === true, {
+    message: "You must accept the terms and conditions.",
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -50,8 +55,11 @@ export default function RegisterPage() {
       lastName: "",
       email: "",
       school: "",
+      ageGroup: undefined,
+      artCategory: undefined,
       password: "",
       confirmPassword: "",
+      terms: false,
     },
   });
 
@@ -158,6 +166,29 @@ export default function RegisterPage() {
                 />
               </div>
 
+              <FormField
+                control={form.control}
+                name="artCategory"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Primary Art Category</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your primary category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="painting-drawing">Painting & Drawing</SelectItem>
+                        <SelectItem value="digital-art">Digital Art</SelectItem>
+                        <SelectItem value="photography">Photography</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
                <FormField
                 control={form.control}
                 name="password"
@@ -184,6 +215,30 @@ export default function RegisterPage() {
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="terms"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        Accept terms and conditions
+                      </FormLabel>
+                      <FormDescription>
+                        You agree to our <Link href="#" className="text-primary hover:underline">Terms of Service</Link> and <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>.
+                      </FormDescription>
+                      <FormMessage />
+                    </div>
                   </FormItem>
                 )}
               />
