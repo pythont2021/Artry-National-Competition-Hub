@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { format, differenceInYears } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, GraduationCap, Upload } from "lucide-react";
+import { Calendar as CalendarIcon, GraduationCap, Upload, Image as ImageIcon, XCircle } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Combobox } from "@/components/ui/combobox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import Image from "next/image";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const boards = [
   {
@@ -235,6 +238,7 @@ const formSchema = z.object({
   dob: z.date({
     required_error: "A date of birth is required.",
   }),
+  ageGroup: z.string().optional(),
   school: z.string().min(1, { message: "School/College is required." }),
   grade: z.string().min(1, { message: "Class/Grade is required." }),
   board: z.string({ required_error: "Please select a board." }),
@@ -254,8 +258,8 @@ const formSchema = z.object({
 
 export default function ParticipantRegisterPage() {
   const { toast } = useToast();
-  const [age, setAge] = useState<number | null>(null);
-  const [ageGroup, setAgeGroup] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -270,28 +274,43 @@ export default function ParticipantRegisterPage() {
       password: "",
       confirmPassword: "",
       terms: false,
+      ageGroup: "Select date of birth to see age group."
     },
   });
   
   const dob = form.watch("dob");
+  const photo = form.watch("profilePhoto");
 
   useEffect(() => {
     if (dob) {
       const calculatedAge = differenceInYears(new Date(), dob);
-      setAge(calculatedAge);
+      let group = "";
       if (calculatedAge >= 9 && calculatedAge <= 12) {
-        setAgeGroup("Junior (9-12 years)");
-      } else if (calculatedAge >= 13 && calculatedAge <= 17) {
-        setAgeGroup("Intermediate (13-17 years)");
-      } else if (calculatedAge >= 18 && calculatedAge <= 22) {
-        setAgeGroup("Senior (18-22 years)");
+        group = "Junior (9-12 years)";
+      } else if (calculatedAge >= 13 && calculatedAge <= 18) {
+        group = "Intermediate (13-18 years)";
+      } else if (calculatedAge >= 19 && calculatedAge <= 22) {
+        group = "Senior (19-22 years)";
       } else if (calculatedAge > 22) {
-        setAgeGroup("Artist (23+ years)");
+        group = "Artist (23+ years)";
       } else {
-        setAgeGroup("Not in eligible age range (must be 9+)");
+        group = "Not in eligible age range (must be 9+)";
       }
+      form.setValue("ageGroup", group);
     }
-  }, [dob]);
+  }, [dob, form]);
+
+  useEffect(() => {
+      if (photo && photo.name) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setProfilePhotoPreview(reader.result as string);
+        };
+        reader.readAsDataURL(photo);
+      } else {
+        setProfilePhotoPreview(null);
+      }
+    }, [photo])
 
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -357,51 +376,63 @@ export default function ParticipantRegisterPage() {
                   )}
                 />
               </div>
-
-               <FormField
-                  control={form.control}
-                  name="dob"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Date of Birth</FormLabel>
-                       <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1990-01-01")
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormDescription>
-                        {age !== null && `You are ${age} years old.`} {ageGroup && `(${ageGroup})`}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                    control={form.control}
+                    name="dob"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Date of Birth</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() || date < new Date("1990-01-01")
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="ageGroup"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Age Group</FormLabel>
+                        <FormControl>
+                          <Input {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <FormField
@@ -490,16 +521,92 @@ export default function ParticipantRegisterPage() {
                 />
               </div>
 
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <FormField
                   control={form.control}
                   name="profilePhoto"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Profile Photo (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files?.[0])} />
-                      </FormControl>
+                      <FormLabel>Profile Photo</FormLabel>
+                      <div className="flex items-center gap-4">
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button type="button" variant="outline">
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    {profilePhotoPreview ? "Change Photo" : "Upload Photo"}
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Upload Profile Photo</DialogTitle>
+                                    <DialogDescription>
+                                        Please upload a clear, high-resolution headshot. HD images are preferred. Blurry images may be rejected.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="flex flex-col items-center gap-4 py-4">
+                                    <div className="w-48 h-48 rounded-full border-2 border-dashed flex items-center justify-center bg-muted/50 overflow-hidden">
+                                        {profilePhotoPreview ? (
+                                             <Image src={profilePhotoPreview} alt="Profile preview" width={192} height={192} className="object-cover w-full h-full" />
+                                        ) : (
+                                            <ImageIcon className="h-16 w-16 text-muted-foreground" />
+                                        )}
+                                    </div>
+                                    <FormControl>
+                                      <Input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        className="hidden"
+                                        ref={fileInputRef}
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (file) {
+                                              if (!file.type.startsWith('image/')) {
+                                                  toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please upload an image file.'});
+                                                  return;
+                                              }
+                                              field.onChange(file);
+                                          }
+                                        }} />
+                                    </FormControl>
+                                    <Button type="button" onClick={() => fileInputRef.current?.click()}>Choose File</Button>
+                                    <Alert variant="destructive" className="hidden" data-ai-hint="blurry image warning">
+                                        <AlertTitle>Image Quality Low</AlertTitle>
+                                        <AlertDescription>
+                                            This image appears to be blurry. Please upload a clearer photo.
+                                        </AlertDescription>
+                                    </Alert>
+                                </div>
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <Button type="button">Done</Button>
+                                    </DialogClose>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+
+                        {profilePhotoPreview && (
+                            <div className="flex items-center gap-2">
+                                <Image src={profilePhotoPreview} alt="Profile thumbnail" width={40} height={40} className="rounded-full object-cover" />
+                                <span className="text-sm text-muted-foreground truncate max-w-xs">{photo?.name}</span>
+
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={() => {
+                                        field.onChange(null);
+                                        if (fileInputRef.current) {
+                                          fileInputRef.current.value = "";
+                                        }
+                                    }}
+                                >
+                                    <XCircle className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </div>
+                        )}
+
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
