@@ -53,18 +53,29 @@ export default function LoginPage() {
     },
   });
 
+  const { isSubmitting } = passwordForm.formState;
+
   async function onPasswordSubmit(values: z.infer<typeof passwordFormSchema>) {
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);
     
-    const result = await login(formData);
+    try {
+      const result = await login(formData);
 
-    if (result?.error) {
+      if (result?.error) {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: result.error,
+        });
+      }
+    } catch (error) {
+      console.error("Login submission error:", error);
       toast({
         variant: "destructive",
-        title: "Login Failed",
-        description: result.error,
+        title: "An unexpected error occurred",
+        description: "Please try again later.",
       });
     }
   }
@@ -122,8 +133,8 @@ export default function LoginPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full" size="lg">
-                    Login with Password
+                  <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                    {isSubmitting ? 'Logging in...' : 'Login with Password'}
                   </Button>
                 </form>
               </Form>
