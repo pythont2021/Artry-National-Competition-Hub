@@ -35,10 +35,64 @@ const schools = [
 ];
 
 const boards = [
-    { value: "cbse", label: "CBSE" },
-    { value: "icse", label: "ICSE" },
-    { value: "ib", label: "IB" },
-    { value: "state-board", label: "State Board" },
+  {
+    heading: "National Boards",
+    options: [
+      { value: "cbse", label: "Central Board of Secondary Education (CBSE)" },
+      { value: "cisce-icse", label: "Council for the Indian School Certificate Examinations (CISCE) - ICSE" },
+      { value: "cisce-isc", label: "Council for the Indian School Certificate Examinations (CISCE) - ISC" },
+      { value: "nios", label: "National Institute of Open Schooling (NIOS)" },
+    ],
+  },
+  {
+    heading: "State Boards of Education",
+    options: [
+      { value: "bieap-ap", label: "Board of Intermediate Education, Andhra Pradesh (BIEAP)" },
+      { value: "bseap-ap", label: "Board of Secondary Education, Andhra Pradesh (BSEAP)" },
+      { value: "dse-arunachal", label: "Directorate of School Education, Arunachal Pradesh" },
+      { value: "seba-assam", label: "Board of Secondary Education, Assam (SEBA)" },
+      { value: "ahsec-assam", label: "Assam Higher Secondary Education Council (AHSEC)" },
+      { value: "bseb-bihar", label: "Bihar School Examination Board (BSEB)" },
+      { value: "cgbse-chhattisgarh", label: "Chhattisgarh Board of Secondary Education (CGBSE)" },
+      { value: "gbshse-goa", label: "Goa Board of Secondary and Higher Secondary Education (GBSHSE)" },
+      { value: "gseb-gujarat", label: "Gujarat Secondary and Higher Secondary Education Board (GSHSEB or GSEB)" },
+      { value: "bseh-haryana", label: "Board of School Education Haryana (BSEH or HBSE)" },
+      { value: "hpbose-himachal", label: "Himachal Pradesh Board of School Education (HPBOSE)" },
+      { value: "jkbose-jk", label: "Jammu and Kashmir Board of School Education (JKBOSE)" },
+      { value: "jac-jharkhand", label: "Jharkhand Academic Council (JAC)" },
+      { value: "kseeb-karnataka", label: "Karnataka Secondary Education Examination Board (KSEEB)" },
+      { value: "dpue-karnataka", label: "Department of Pre-University Education (DPUE)" },
+      { value: "kbpe-kerala", label: "Kerala Board of Public Examinations (KBPE)" },
+      { value: "dhse-kerala", label: "Directorate of Higher Secondary Education (DHSE)" },
+      { value: "mpbse-mp", label: "Board of Secondary Education, Madhya Pradesh (MPBSE)" },
+      { value: "msbshse-maharashtra", label: "Maharashtra State Board of Secondary and Higher Secondary Education (MSBSHSE)" },
+      { value: "bsem-manipur", label: "Board of Secondary Education, Manipur (BSEM)" },
+      { value: "cohsem-manipur", label: "Council of Higher Secondary Education, Manipur (COHSEM)" },
+      { value: "mbose-meghalaya", label: "Meghalaya Board of School Education (MBOSE)" },
+      { value: "mbse-mizoram", label: "Mizoram Board of School Education (MBSE)" },
+      { value: "nbse-nagaland", label: "Nagaland Board of School Education (NBSE)" },
+      { value: "bse-odisha", label: "Board of Secondary Education, Odisha (BSE Odisha)" },
+      { value: "chse-odisha", label: "Council of Higher Secondary Education, Odisha (CHSE Odisha)" },
+      { value: "pseb-punjab", label: "Punjab School Education Board (PSEB)" },
+      { value: "rbse-rajasthan", label: "Board of Secondary Education, Rajasthan (RBSE)" },
+      { value: "sbse-sikkim", label: "Sikkim Board of Secondary Education (SBSE)" },
+      { value: "tndge-tamilnadu", label: "Directorate of Government Examinations, Tamil Nadu (TNDGE)" },
+      { value: "tsbie-telangana", label: "Board of Intermediate Education, Telangana (TSBIE)" },
+      { value: "bse-telangana", label: "Board of Secondary Education, Telangana (BSE Telangana)" },
+      { value: "tbse-tripura", label: "Tripura Board of Secondary Education (TBSE)" },
+      { value: "upmsp-up", label: "Uttar Pradesh Board of High School and Intermediate Education (UPMSP)" },
+      { value: "ubse-uttarakhand", label: "Uttarakhand Board of School Education (UBSE)" },
+      { value: "wbbse-wb", label: "West Bengal Board of Secondary Education (WBBSE)" },
+      { value: "wbchse-wb", label: "West Bengal Council of Higher Secondary Education (WBCHSE)" },
+    ],
+  },
+  {
+    heading: "Other / Open Boards",
+    options: [
+      { value: "ignou", label: "Indira Gandhi National Open University (IGNOU)" },
+      { value: "dr-ambedkar-ou", label: "Dr. Ambedkar Open University" },
+    ],
+  },
 ];
 
 

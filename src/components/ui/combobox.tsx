@@ -19,8 +19,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
+interface ComboboxOption {
+    label: string;
+    value: string;
+}
+
+interface ComboboxOptionGroup {
+    heading: string;
+    options: ComboboxOption[];
+}
+
+function isGrouped(options: (ComboboxOption | ComboboxOptionGroup)[]): options is ComboboxOptionGroup[] {
+    return options.length > 0 && 'heading' in options[0] && 'options' in options[0];
+}
+
 interface ComboboxProps {
-    options: { label: string; value: string }[];
+    options: ComboboxOption[] | ComboboxOptionGroup[];
     value?: string;
     onChange: (value: string) => void;
     placeholder?: string;
@@ -30,6 +44,22 @@ interface ComboboxProps {
 export function Combobox({ options, value, onChange, placeholder, emptyMessage }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
 
+  const selectedLabel = React.useMemo(() => {
+    if (!value) return placeholder || "Select option...";
+    
+    let allOptions: ComboboxOption[] = [];
+    if (isGrouped(options)) {
+        allOptions = options.flatMap(group => group.options);
+    } else {
+        allOptions = options as ComboboxOption[];
+    }
+
+    const found = allOptions.find((option) => option.value === value);
+    return found ? found.label : placeholder || "Select option...";
+
+  }, [value, options, placeholder]);
+
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -37,11 +67,9 @@ export function Combobox({ options, value, onChange, placeholder, emptyMessage }
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between text-left font-normal"
         >
-          {value
-            ? options.find((option) => option.value === value)?.label
-            : placeholder || "Select option..."}
+          <span className="truncate">{selectedLabel}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -50,26 +78,51 @@ export function Combobox({ options, value, onChange, placeholder, emptyMessage }
           <CommandInput placeholder={placeholder || "Search option..."} />
           <CommandList>
             <CommandEmpty>{emptyMessage || "No option found."}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    onChange(currentValue === value ? "" : currentValue)
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {isGrouped(options) ? (
+                options.map((group) => (
+                    <CommandGroup key={group.heading} heading={group.heading}>
+                        {group.options.map((option) => (
+                             <CommandItem
+                                key={option.value}
+                                value={option.value}
+                                onSelect={(currentValue) => {
+                                    onChange(currentValue === value ? "" : currentValue)
+                                    setOpen(false)
+                                }}
+                            >
+                                <Check
+                                    className={cn(
+                                    "mr-2 h-4 w-4",
+                                    value === option.value ? "opacity-100" : "opacity-0"
+                                    )}
+                                />
+                                {option.label}
+                            </CommandItem>
+                        ))}
+                    </CommandGroup>
+                ))
+            ) : (
+                <CommandGroup>
+                {(options as ComboboxOption[]).map((option) => (
+                    <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={(currentValue) => {
+                        onChange(currentValue === value ? "" : currentValue)
+                        setOpen(false)
+                    }}
+                    >
+                    <Check
+                        className={cn(
+                        "mr-2 h-4 w-4",
+                        value === option.value ? "opacity-100" : "opacity-0"
+                        )}
+                    />
+                    {option.label}
+                    </CommandItem>
+                ))}
+                </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>
