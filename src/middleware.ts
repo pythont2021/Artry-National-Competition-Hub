@@ -17,5 +17,5 @@ export function middleware(request: NextRequest) {
 
 // See "Matching Paths" in Next.js documentation for more details.
 export const config = {
-  matcher: ['/competition/vote', '/dashboard/participant'],
+  matcher: ['/competition/vote', '/dashboard/:path*'],
 };
