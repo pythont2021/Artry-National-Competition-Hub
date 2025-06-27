@@ -154,8 +154,12 @@ export function Header() {
           </nav>
         </div>
         <div className="flex items-center justify-end gap-2">
-          <Button variant="ghost">Login</Button>
-          <Button>Register</Button>
+          <Button asChild variant="ghost">
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/register">Register</Link>
+          </Button>
         </div>
       </div>
     </header>
