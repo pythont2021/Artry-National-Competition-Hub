@@ -10,6 +10,7 @@ import {
   Users,
   Info,
   ChevronDown,
+  LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +54,7 @@ const navLinks = [
   },
   { href: "/competition/testimonials", label: "Testimonials", icon: Award },
   { href: "/competition/about-art", label: "About Art", icon: Info },
-  { href: "/competition/vote", label: "Vote", icon: Users },
+  { href: "/competition/vote", label: "Gallery", icon: LayoutGrid },
 ];
 
 export function Header() {
