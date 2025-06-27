@@ -2,8 +2,6 @@ import { VoteClientPage } from "@/components/vote-client-page";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export const dynamic = 'force-dynamic';
-
 export default function VotePage() {
   const authToken = cookies().get('auth-token')?.value;
 
