@@ -45,43 +45,183 @@ const boards = [
     ],
   },
   {
-    heading: "State Boards of Education",
+    heading: "Andhra Pradesh",
     options: [
       { value: "bieap-ap", label: "Board of Intermediate Education, Andhra Pradesh (BIEAP)" },
       { value: "bseap-ap", label: "Board of Secondary Education, Andhra Pradesh (BSEAP)" },
-      { value: "dse-arunachal", label: "Directorate of School Education, Arunachal Pradesh" },
+    ],
+  },
+  {
+    heading: "Arunachal Pradesh",
+    options: [
+        { value: "dse-arunachal", label: "Directorate of School Education, Arunachal Pradesh" },
+    ],
+  },
+  {
+    heading: "Assam",
+    options: [
       { value: "seba-assam", label: "Board of Secondary Education, Assam (SEBA)" },
       { value: "ahsec-assam", label: "Assam Higher Secondary Education Council (AHSEC)" },
-      { value: "bseb-bihar", label: "Bihar School Examination Board (BSEB)" },
-      { value: "cgbse-chhattisgarh", label: "Chhattisgarh Board of Secondary Education (CGBSE)" },
-      { value: "gbshse-goa", label: "Goa Board of Secondary and Higher Secondary Education (GBSHSE)" },
-      { value: "gseb-gujarat", label: "Gujarat Secondary and Higher Secondary Education Board (GSHSEB or GSEB)" },
-      { value: "bseh-haryana", label: "Board of School Education Haryana (BSEH or HBSE)" },
-      { value: "hpbose-himachal", label: "Himachal Pradesh Board of School Education (HPBOSE)" },
-      { value: "jkbose-jk", label: "Jammu and Kashmir Board of School Education (JKBOSE)" },
-      { value: "jac-jharkhand", label: "Jharkhand Academic Council (JAC)" },
+    ],
+  },
+  {
+    heading: "Bihar",
+    options: [
+        { value: "bseb-bihar", label: "Bihar School Examination Board (BSEB)" },
+    ],
+  },
+  {
+    heading: "Chhattisgarh",
+    options: [
+        { value: "cgbse-chhattisgarh", label: "Chhattisgarh Board of Secondary Education (CGBSE)" },
+    ],
+  },
+  {
+    heading: "Goa",
+    options: [
+        { value: "gbshse-goa", label: "Goa Board of Secondary and Higher Secondary Education (GBSHSE)" },
+    ],
+  },
+  {
+    heading: "Gujarat",
+    options: [
+        { value: "gseb-gujarat", label: "Gujarat Secondary and Higher Secondary Education Board (GSHSEB or GSEB)" },
+    ],
+  },
+  {
+    heading: "Haryana",
+    options: [
+        { value: "bseh-haryana", label: "Board of School Education Haryana (BSEH or HBSE)" },
+    ],
+  },
+  {
+    heading: "Himachal Pradesh",
+    options: [
+        { value: "hpbose-himachal", label: "Himachal Pradesh Board of School Education (HPBOSE)" },
+    ],
+  },
+  {
+    heading: "Jammu & Kashmir",
+    options: [
+        { value: "jkbose-jk", label: "Jammu and Kashmir Board of School Education (JKBOSE)" },
+    ],
+  },
+  {
+    heading: "Jharkhand",
+    options: [
+        { value: "jac-jharkhand", label: "Jharkhand Academic Council (JAC)" },
+    ],
+  },
+  {
+    heading: "Karnataka",
+    options: [
       { value: "kseeb-karnataka", label: "Karnataka Secondary Education Examination Board (KSEEB)" },
       { value: "dpue-karnataka", label: "Department of Pre-University Education (DPUE)" },
+    ],
+  },
+  {
+    heading: "Kerala",
+    options: [
       { value: "kbpe-kerala", label: "Kerala Board of Public Examinations (KBPE)" },
       { value: "dhse-kerala", label: "Directorate of Higher Secondary Education (DHSE)" },
-      { value: "mpbse-mp", label: "Board of Secondary Education, Madhya Pradesh (MPBSE)" },
-      { value: "msbshse-maharashtra", label: "Maharashtra State Board of Secondary and Higher Secondary Education (MSBSHSE)" },
+    ],
+  },
+  {
+    heading: "Madhya Pradesh",
+    options: [
+        { value: "mpbse-mp", label: "Board of Secondary Education, Madhya Pradesh (MPBSE)" },
+    ],
+  },
+  {
+    heading: "Maharashtra",
+    options: [
+        { value: "msbshse-maharashtra", label: "Maharashtra State Board of Secondary and Higher Secondary Education (MSBSHSE)" },
+    ],
+  },
+  {
+    heading: "Manipur",
+    options: [
       { value: "bsem-manipur", label: "Board of Secondary Education, Manipur (BSEM)" },
       { value: "cohsem-manipur", label: "Council of Higher Secondary Education, Manipur (COHSEM)" },
-      { value: "mbose-meghalaya", label: "Meghalaya Board of School Education (MBOSE)" },
-      { value: "mbse-mizoram", label: "Mizoram Board of School Education (MBSE)" },
-      { value: "nbse-nagaland", label: "Nagaland Board of School Education (NBSE)" },
+    ],
+  },
+  {
+    heading: "Meghalaya",
+    options: [
+        { value: "mbose-meghalaya", label: "Meghalaya Board of School Education (MBOSE)" },
+    ],
+  },
+  {
+    heading: "Mizoram",
+    options: [
+        { value: "mbse-mizoram", label: "Mizoram Board of School Education (MBSE)" },
+    ],
+  },
+  {
+    heading: "Nagaland",
+    options: [
+        { value: "nbse-nagaland", label: "Nagaland Board of School Education (NBSE)" },
+    ],
+  },
+  {
+    heading: "Odisha",
+    options: [
       { value: "bse-odisha", label: "Board of Secondary Education, Odisha (BSE Odisha)" },
       { value: "chse-odisha", label: "Council of Higher Secondary Education, Odisha (CHSE Odisha)" },
-      { value: "pseb-punjab", label: "Punjab School Education Board (PSEB)" },
-      { value: "rbse-rajasthan", label: "Board of Secondary Education, Rajasthan (RBSE)" },
-      { value: "sbse-sikkim", label: "Sikkim Board of Secondary Education (SBSE)" },
-      { value: "tndge-tamilnadu", label: "Directorate of Government Examinations, Tamil Nadu (TNDGE)" },
+    ],
+  },
+  {
+    heading: "Punjab",
+    options: [
+        { value: "pseb-punjab", label: "Punjab School Education Board (PSEB)" },
+    ],
+  },
+  {
+    heading: "Rajasthan",
+    options: [
+        { value: "rbse-rajasthan", label: "Board of Secondary Education, Rajasthan (RBSE)" },
+    ],
+  },
+  {
+    heading: "Sikkim",
+    options: [
+        { value: "sbse-sikkim", label: "Sikkim Board of Secondary Education (SBSE)" },
+    ],
+  },
+  {
+    heading: "Tamil Nadu",
+    options: [
+        { value: "tndge-tamilnadu", label: "Directorate of Government Examinations, Tamil Nadu (TNDGE)" },
+    ],
+  },
+  {
+    heading: "Telangana",
+    options: [
       { value: "tsbie-telangana", label: "Board of Intermediate Education, Telangana (TSBIE)" },
       { value: "bse-telangana", label: "Board of Secondary Education, Telangana (BSE Telangana)" },
-      { value: "tbse-tripura", label: "Tripura Board of Secondary Education (TBSE)" },
-      { value: "upmsp-up", label: "Uttar Pradesh Board of High School and Intermediate Education (UPMSP)" },
-      { value: "ubse-uttarakhand", label: "Uttarakhand Board of School Education (UBSE)" },
+    ],
+  },
+  {
+    heading: "Tripura",
+    options: [
+        { value: "tbse-tripura", label: "Tripura Board of Secondary Education (TBSE)" },
+    ],
+  },
+  {
+    heading: "Uttar Pradesh",
+    options: [
+        { value: "upmsp-up", label: "Uttar Pradesh Board of High School and Intermediate Education (UPMSP)" },
+    ],
+  },
+  {
+    heading: "Uttarakhand",
+    options: [
+        { value: "ubse-uttarakhand", label: "Uttarakhand Board of School Education (UBSE)" },
+    ],
+  },
+  {
+    heading: "West Bengal",
+    options: [
       { value: "wbbse-wb", label: "West Bengal Board of Secondary Education (WBBSE)" },
       { value: "wbchse-wb", label: "West Bengal Council of Higher Secondary Education (WBCHSE)" },
     ],
