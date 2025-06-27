@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, GraduationCap, Upload, Image as ImageIcon, XCircle } from "lucide-react";
+import { Calendar as CalendarIcon, GraduationCap, Upload, Image as ImageIcon, XCircle, Info } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -497,6 +497,13 @@ export default function ParticipantRegisterPage() {
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
+                      <Alert className="mt-4">
+                        <Info className="h-4 w-4" />
+                        <AlertTitle>Note on 'Artist' Category</AlertTitle>
+                        <AlertDescription>
+                          Artists enter at a higher competition level (Level 4). To change category later, a new registration with a unique email/mobile is required.
+                        </AlertDescription>
+                      </Alert>
                       <FormMessage />
                     </FormItem>
                   )}
