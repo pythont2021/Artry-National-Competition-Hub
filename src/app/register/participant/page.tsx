@@ -707,7 +707,14 @@ export default function ParticipantRegisterPage() {
                                       </AlertDescription>
                                   </Alert>
                               </div>
-                              <DialogFooter>
+                               <Alert>
+                                <Info className="h-4 w-4" />
+                                <AlertTitle>Heads up!</AlertTitle>
+                                <AlertDescription>
+                                  Your profile photo will be used for upcoming certifications, awards, and achievements.
+                                </AlertDescription>
+                              </Alert>
+                              <DialogFooter className="pt-4">
                                   <DialogClose asChild>
                                       <Button type="button">Done</Button>
                                   </DialogClose>
