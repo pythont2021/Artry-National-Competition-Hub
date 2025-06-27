@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -30,6 +31,7 @@ export default function VotePage() {
   const [artworks, setArtworks] = useState(initialArtworks);
   const [matchup, setMatchup] = useState<[Artwork, Artwork] | null>(null);
   const [voted, setVoted] = useState(false);
+  const [selectedWinnerId, setSelectedWinnerId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const getNewMatchup = () => {
@@ -48,6 +50,7 @@ export default function VotePage() {
     }
     setMatchup(newMatchup as [Artwork, Artwork]);
     setVoted(false);
+    setSelectedWinnerId(null);
   };
 
   useEffect(() => {
@@ -65,6 +68,7 @@ export default function VotePage() {
       return;
     }
     setVoted(true);
+    setSelectedWinnerId(winnerId);
     toast({
       title: "Vote Cast!",
       description: "Thank you for supporting our artists. Click Next to see another matchup.",
@@ -73,8 +77,8 @@ export default function VotePage() {
 
   if (!matchup) {
     return (
-      <div className="container mx-auto px-4 py-16 flex justify-center items-center">
-        <p>Loading matchup...</p>
+      <div className="container mx-auto px-4 py-16 flex justify-center items-center min-h-screen">
+        <p className="font-headline text-xl">Loading matchup...</p>
       </div>
     );
   }
@@ -90,38 +94,61 @@ export default function VotePage() {
         </p>
       </section>
 
-      <section className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
-        {matchup.map((artwork) => (
-          <Card key={artwork.id} className="flex flex-col">
-            <CardHeader className="p-0">
-              <div className="aspect-[3/4] overflow-hidden rounded-t-lg">
-                <Image
-                  src={artwork.imageUrl}
-                  alt={artwork.title}
-                  width={600}
-                  height={800}
-                  data-ai-hint={artwork.aiHint}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6 flex-grow">
-              <CardTitle className="font-headline text-2xl">{artwork.title}</CardTitle>
-              <CardDescription className="font-body text-md mt-1">by {artwork.artist}</CardDescription>
-            </CardContent>
-            <CardContent>
-               <Button onClick={() => handleVote(artwork.id)} disabled={voted} className="w-full">
-                <ThumbsUp className="mr-2 h-4 w-4" />
-                Vote for this Artwork
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+      <section className="mt-12 flex flex-col md:flex-row items-center justify-center gap-8">
+        <Card className={`group w-full max-w-sm transition-all duration-300 ${voted && selectedWinnerId !== matchup[0].id ? 'opacity-50 scale-95' : 'hover:shadow-2xl'}`}>
+          <CardHeader className="p-0">
+            <div className="aspect-[3/4] overflow-hidden rounded-t-lg">
+              <Image
+                src={matchup[0].imageUrl}
+                alt={matchup[0].title}
+                width={600}
+                height={800}
+                data-ai-hint={matchup[0].aiHint}
+                className={`h-full w-full object-cover transition-transform duration-300 ${voted ? '' : 'group-hover:scale-105'}`}
+              />
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 text-center">
+            <CardTitle className="font-headline text-2xl">{matchup[0].title}</CardTitle>
+            <CardDescription className="font-body text-md mt-1">by {matchup[0].artist}</CardDescription>
+            <Button onClick={() => handleVote(matchup[0].id)} disabled={voted} className="w-full mt-6">
+              <ThumbsUp className="mr-2 h-4 w-4" />
+              Vote for this Artwork
+            </Button>
+          </CardContent>
+        </Card>
+
+        <div className="hidden md:flex flex-col items-center justify-center font-headline text-4xl text-muted-foreground my-4 md:my-0">
+            VS
+        </div>
+        
+        <Card className={`group w-full max-w-sm transition-all duration-300 ${voted && selectedWinnerId !== matchup[1].id ? 'opacity-50 scale-95' : 'hover:shadow-2xl'}`}>
+           <CardHeader className="p-0">
+            <div className="aspect-[3/4] overflow-hidden rounded-t-lg">
+              <Image
+                src={matchup[1].imageUrl}
+                alt={matchup[1].title}
+                width={600}
+                height={800}
+                data-ai-hint={matchup[1].aiHint}
+                className={`h-full w-full object-cover transition-transform duration-300 ${voted ? '' : 'group-hover:scale-105'}`}
+              />
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 text-center">
+            <CardTitle className="font-headline text-2xl">{matchup[1].title}</CardTitle>
+            <CardDescription className="font-body text-md mt-1">by {matchup[1].artist}</CardDescription>
+            <Button onClick={() => handleVote(matchup[1].id)} disabled={voted} className="w-full mt-6">
+              <ThumbsUp className="mr-2 h-4 w-4" />
+              Vote for this Artwork
+            </Button>
+          </CardContent>
+        </Card>
       </section>
 
       <section className="mt-12 text-center">
         {voted && (
-          <Button onClick={getNewMatchup} size="lg">
+          <Button onClick={getNewMatchup} size="lg" className="animate-pulse">
             Next Matchup <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         )}
