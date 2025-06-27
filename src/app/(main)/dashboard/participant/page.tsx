@@ -1,6 +1,13 @@
 import { MotivationalMessage } from "@/components/motivational-message";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default function ParticipantDashboard() {
+  const isLoggedIn = !!cookies().get('auth-token')?.value;
+  if (!isLoggedIn) {
+    redirect('/login?from=/dashboard/participant');
+  }
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
