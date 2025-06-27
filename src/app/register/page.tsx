@@ -1,263 +1,72 @@
-"use client";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import Link from "next/link";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { User, Shield, GraduationCap } from "lucide-react";
 
-const formSchema = z.object({
-  firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
-  lastName: z.string().min(2, { message: "Last name must be at least 2 characters." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  school: z.string().min(2, { message: "School name is required." }),
-  ageGroup: z.string({ required_error: "Please select an age group." }),
-  artCategory: z.string({ required_error: "Please select your primary art category." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
-  confirmPassword: z.string(),
-  terms: z.boolean().refine((val) => val === true, {
-    message: "You must accept the terms and conditions.",
-  }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
-
+const registrationTypes = [
+  {
+    icon: <GraduationCap className="h-8 w-8 text-primary" />,
+    title: "Participant",
+    description: "Register as a young artist to submit your work and participate in the competition.",
+    href: "/register/participant",
+    cta: "Register as Participant",
+  },
+  {
+    icon: <User className="h-8 w-8 text-primary" />,
+    title: "Teacher / Volunteer",
+    description: "Join us as a teacher or volunteer to support and guide our talented participants.",
+    href: "/register/teacher",
+    cta: "Register as Teacher",
+  },
+  {
+    icon: <Shield className="h-8 w-8 text-primary" />,
+    title: "Judiciary / Jury",
+    description: "Apply to be a part of our esteemed jury to help us discover the next generation of artists.",
+    href: "/register/jury",
+    cta: "Register as Jury",
+  },
+];
 
 export default function RegisterPage() {
-  const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      school: "",
-      ageGroup: undefined,
-      artCategory: undefined,
-      password: "",
-      confirmPassword: "",
-      terms: false,
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Registration Successful",
-      description: "Your account has been created. Welcome to Artry!",
-    });
-    // Here you would typically handle user registration
-  }
-
   return (
-    <div className="container mx-auto px-4 py-16 flex items-center justify-center">
-      <Card className="w-full max-w-2xl">
-        <CardHeader className="text-center">
-            <div className="mx-auto bg-primary text-primary-foreground rounded-full p-3 w-fit mb-4">
-              <UserPlus className="h-6 w-6" />
+    <div className="container mx-auto px-4 py-16">
+      <section className="text-center">
+        <h1 className="font-headline text-4xl sm:text-5xl font-bold tracking-tighter">
+          Join Artry
+        </h1>
+        <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground font-body">
+          Select your role to begin the registration process. We're excited to have you on board!
+        </p>
+      </section>
+
+      <section className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+        {registrationTypes.map((type) => (
+          <Card key={type.title} className="flex flex-col text-center">
+            <CardHeader>
+              <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit mb-2">
+                {type.icon}
+              </div>
+              <CardTitle className="font-headline">{type.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <CardDescription>{type.description}</CardDescription>
+            </CardContent>
+            <div className="p-6 pt-0">
+                <Button asChild className="w-full">
+                    <Link href={type.href}>{type.cta}</Link>
+                </Button>
             </div>
-          <CardTitle className="font-headline text-3xl">Join the Competition</CardTitle>
-          <CardDescription>Create your Artry account to get started.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Sajre" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Foundation" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-               <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="name@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="school"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>School/Institution</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Artry Academy of Arts" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name="ageGroup"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Age Group</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select your age group" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="10-14">10-14 years</SelectItem>
-                          <SelectItem value="15-18">15-18 years</SelectItem>
-                          <SelectItem value="19-22">19-22 years</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="artCategory"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Primary Art Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your primary category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="painting-drawing">Painting & Drawing</SelectItem>
-                        <SelectItem value="digital-art">Digital Art</SelectItem>
-                        <SelectItem value="photography">Photography</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-               <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Must be at least 8 characters.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="terms"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        Accept terms and conditions
-                      </FormLabel>
-                      <FormDescription>
-                        You agree to our <Link href="#" className="text-primary hover:underline">Terms of Service</Link> and <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>.
-                      </FormDescription>
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit" className="w-full" size="lg">
-                Create Account
-              </Button>
-            </form>
-          </Form>
-          <div className="mt-6 text-center text-sm font-body">
+          </Card>
+        ))}
+      </section>
+       <div className="mt-12 text-center text-sm font-body">
             <p className="text-muted-foreground">
               Already have an account?{" "}
               <Link href="/login" className="font-medium text-primary hover:underline">
                 Login
               </Link>
             </p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
     </div>
   );
 }

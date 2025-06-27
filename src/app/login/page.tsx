@@ -16,9 +16,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogIn } from "lucide-react";
 
-const formSchema = z.object({
+const passwordFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
@@ -27,23 +28,43 @@ const formSchema = z.object({
   }),
 });
 
+const otpFormSchema = z.object({
+  mobile: z.string().regex(/^\d{10}$/, {
+    message: "Please enter a valid 10-digit mobile number.",
+  }),
+});
+
 export default function LoginPage() {
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const passwordForm = useForm<z.infer<typeof passwordFormSchema>>({
+    resolver: zodResolver(passwordFormSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // Here you would typically handle authentication
+  const otpForm = useForm<z.infer<typeof otpFormSchema>>({
+    resolver: zodResolver(otpFormSchema),
+    defaultValues: {
+      mobile: "",
+    },
+  });
+
+  function onPasswordSubmit(values: z.infer<typeof passwordFormSchema>) {
+    console.log("Password login:", values);
     toast({
       title: "Login Successful",
       description: "Welcome back!",
+    });
+  }
+  
+  function onOtpSubmit(values: z.infer<typeof otpFormSchema>) {
+    console.log("OTP login:", values);
+    toast({
+      title: "OTP Sent",
+      description: "Check your mobile for the one-time password.",
     });
   }
 
@@ -55,42 +76,72 @@ export default function LoginPage() {
               <LogIn className="h-6 w-6" />
             </div>
           <CardTitle className="font-headline text-3xl">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your Artry account</CardDescription>
+          <CardDescription>Sign in to your Artry account to continue</CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="name@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" size="lg">
-                Login
-              </Button>
-            </form>
-          </Form>
+          <Tabs defaultValue="password">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="password">Password</TabsTrigger>
+              <TabsTrigger value="otp">OTP</TabsTrigger>
+            </TabsList>
+            <TabsContent value="password">
+              <Form {...passwordForm}>
+                <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6 pt-4">
+                  <FormField
+                    control={passwordForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="name@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={passwordForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="••••••••" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full" size="lg">
+                    Login with Password
+                  </Button>
+                </form>
+              </Form>
+            </TabsContent>
+            <TabsContent value="otp">
+               <Form {...otpForm}>
+                <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-6 pt-4">
+                  <FormField
+                    control={otpForm.control}
+                    name="mobile"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mobile Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., 9876543210" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full" size="lg">
+                    Send OTP
+                  </Button>
+                </form>
+              </Form>
+            </TabsContent>
+          </Tabs>
           <div className="mt-6 text-center text-sm font-body">
             <p className="text-muted-foreground">
               Don't have an account?{" "}
