@@ -1,3 +1,4 @@
+
 import { VoteClientPage } from "@/components/vote-client-page";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
