@@ -53,11 +53,20 @@ export default function LoginPage() {
     },
   });
 
-  function onPasswordSubmit(values: z.infer<typeof passwordFormSchema>) {
+  async function onPasswordSubmit(values: z.infer<typeof passwordFormSchema>) {
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);
-    login(formData);
+    
+    const result = await login(formData);
+
+    if (result?.error) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: result.error,
+      });
+    }
   }
   
   function onOtpSubmit(values: z.infer<typeof otpFormSchema>) {

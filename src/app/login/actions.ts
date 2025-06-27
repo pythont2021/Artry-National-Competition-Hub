@@ -17,10 +17,10 @@ export async function login(formData: FormData) {
       path: '/',
     });
 
-    // After successful login, redirect the user to the vote page.
-    redirect('/competition/vote');
+    // After successful login, redirect the user to the dashboard.
+    redirect('/dashboard/participant');
   }
 
-  // If credentials don't match, you would typically return an error to the client.
-  // For now, the user will just remain on the login page.
+  // If credentials don't match, return an error message.
+  return { error: 'Invalid email or password. Please try again.' };
 }
