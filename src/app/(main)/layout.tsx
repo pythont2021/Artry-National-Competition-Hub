@@ -2,6 +2,8 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { cookies } from "next/headers";
 
+export const dynamic = 'force-dynamic';
+
 export default function MainLayout({
   children,
 }: {

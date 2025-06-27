@@ -2,6 +2,8 @@ import { MotivationalMessage } from "@/components/motivational-message";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 export default function ParticipantDashboard() {
   const isLoggedIn = !!cookies().get('auth-token')?.value;
   if (!isLoggedIn) {
