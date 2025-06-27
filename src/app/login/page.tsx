@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogIn } from "lucide-react";
+import { login } from "./actions";
 
 const passwordFormSchema = z.object({
   email: z.string().email({
@@ -53,11 +54,10 @@ export default function LoginPage() {
   });
 
   function onPasswordSubmit(values: z.infer<typeof passwordFormSchema>) {
-    console.log("Password login:", values);
-    toast({
-      title: "Login Successful",
-      description: "Welcome back!",
-    });
+    const formData = new FormData();
+    formData.append("email", values.email);
+    formData.append("password", values.password);
+    login(formData);
   }
   
   function onOtpSubmit(values: z.infer<typeof otpFormSchema>) {
