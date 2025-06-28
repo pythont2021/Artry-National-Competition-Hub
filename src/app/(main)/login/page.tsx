@@ -133,7 +133,8 @@ export default function LoginPage() {
                   <div className="text-xs text-muted-foreground space-y-2">
                     <p><b>Enrolled Participant:</b><br/>participant@artry.com / participant123</p>
                     <p><b>Unenrolled Participant:</b><br/>unenrolled@artry.com / unenrolled123</p>
-                    <p><b>Artist:</b><br/>artist@artry.com / artist123</p>
+                    <p><b>Unenrolled Artist:</b><br/>artist@artry.com / artist123</p>
+                    <p><b>Enrolled Artist:</b><br/>enrolled-artist@artry.com / artist123</p>
                     <p><b>Audience:</b><br/>audience@artry.com / audience123</p>
                     <p><b>Volunteer:</b><br/>volunteer@artry.com / volunteer123</p>
                     <p><b>Jury:</b><br/>jury@artry.com / jury123</p>

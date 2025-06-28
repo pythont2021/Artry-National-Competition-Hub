@@ -32,8 +32,19 @@ export async function login(prevState: any, formData: FormData) {
     redirect('/dashboard/participant');
   }
 
-  // Artist credentials
+  // Unenrolled Artist credentials
   if (email === 'artist@artry.com' && password === 'artist123') {
+    cookies().set('auth-token', 'mock-user-session-token-for-artist-unenrolled', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // Cookie expires in 1 day
+      path: '/',
+    });
+    redirect('/dashboard/artist');
+  }
+
+  // Enrolled Artist credentials
+  if (email === 'enrolled-artist@artry.com' && password === 'artist123') {
     cookies().set('auth-token', 'mock-user-session-token-for-artist-enrolled', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
