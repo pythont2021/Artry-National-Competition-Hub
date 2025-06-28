@@ -60,7 +60,7 @@ const navLinks = [
   { href: "/competition/vote", label: "Vote", icon: ThumbsUp },
 ];
 
-export function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
+export function Header({ isLoggedIn, userType }: { isLoggedIn: boolean, userType?: string }) {
   const pathname = usePathname();
 
   const renderLink = (link: any, isMobile = false) => {
@@ -176,7 +176,7 @@ export function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
           {isLoggedIn ? (
             <>
               <Button asChild>
-                <Link href="/dashboard/participant">Dashboard</Link>
+                <Link href={userType === 'volunteer' ? "/dashboard/volunteer" : "/dashboard/participant"}>Dashboard</Link>
               </Button>
               <form action={logout}>
                 <Button type="submit" variant="ghost">

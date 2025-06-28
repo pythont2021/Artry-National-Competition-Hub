@@ -9,11 +9,20 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isLoggedIn = !!cookies().get('auth-token')?.value;
+  const authToken = cookies().get('auth-token')?.value;
+  const isLoggedIn = !!authToken;
+  let userType = undefined;
+  if (authToken) {
+      if (authToken.includes('participant')) {
+          userType = 'participant';
+      } else if (authToken.includes('volunteer')) {
+          userType = 'volunteer';
+      }
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header isLoggedIn={isLoggedIn} />
+      <Header isLoggedIn={isLoggedIn} userType={userType} />
       <main className="flex-grow">{children}</main>
       <Footer />
     </div>

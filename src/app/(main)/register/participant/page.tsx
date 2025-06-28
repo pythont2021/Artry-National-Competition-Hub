@@ -247,6 +247,7 @@ const formSchema = z.object({
   grade: z.string().min(1, { message: "Class/Grade is required." }),
   address: z.string().min(10, { message: "Address must be at least 10 characters." }),
   altContact: z.string().regex(/^\d{10}$/, { message: "Please enter a valid 10-digit mobile number." }).optional().or(z.literal('')),
+  referralCode: z.string().optional(),
   profilePhoto: z.any().refine((file) => file, {
     message: "Profile photo is required.",
   }),
@@ -313,6 +314,7 @@ export default function ParticipantRegisterPage() {
       ageGroup: "Select date of birth to see age group.",
       participantCategory: undefined,
       profilePhoto: undefined,
+      referralCode: "",
     },
   });
   
@@ -620,6 +622,23 @@ export default function ParticipantRegisterPage() {
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="referralCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Referral Code (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter teacher or volunteer referral code" {...field} value={field.value ?? ''} />
+                    </FormControl>
+                    <FormDescription>
+                        If a teacher or volunteer referred you, please enter their code here.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
