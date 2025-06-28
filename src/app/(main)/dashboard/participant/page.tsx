@@ -1,6 +1,13 @@
-import { MotivationalMessage } from "@/components/motivational-message";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProfileCard } from "@/components/profile-card";
+import { UpcomingEventsAlert } from "@/components/upcoming-events-alert";
+import { ArtSubmissions } from "@/components/art-submissions";
+import { AchievementsSection } from "@/components/achievements-section";
+import { MotivationalMessage } from "@/components/motivational-message";
+
+export const dynamic = 'force-dynamic';
 
 export default function ParticipantDashboard() {
   const isLoggedIn = !!cookies().get('auth-token')?.value;
@@ -8,37 +15,46 @@ export default function ParticipantDashboard() {
     redirect('/login?from=/dashboard/participant');
   }
 
+  const user = {
+    name: "Priya Sharma",
+    avatarUrl: "https://i.pravatar.cc/150?u=Priya%20Sharma",
+    category: "Junior (9-12 years)",
+    school: "Delhi Public School",
+  }
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
-          <h1 className="font-headline text-4xl font-bold">Welcome, Artist!</h1>
-          <p className="text-muted-foreground font-body text-lg mt-2">Here's a summary of your journey with us.</p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2">
-            <h2 className="font-headline text-2xl font-semibold mb-4">Notifications</h2>
+      <div className="mb-8">
+        <h1 className="font-headline text-4xl font-bold">Welcome, {user.name.split(' ')[0]}!</h1>
+        <p className="text-muted-foreground font-body text-lg mt-2">Here's a summary of your journey with us.</p>
+      </div>
+
+      <Tabs defaultValue="dashboard">
+        <TabsList>
+          <TabsTrigger value="dashboard">My Dashboard</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+        </TabsList>
+        <TabsContent value="dashboard" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1 flex flex-col gap-8">
+                    <ProfileCard 
+                        name={user.name}
+                        avatarUrl={user.avatarUrl}
+                        category={user.category}
+                        school={user.school}
+                    />
+                    <UpcomingEventsAlert />
+                </div>
+                <div className="lg:col-span-2 flex flex-col gap-8">
+                    <ArtSubmissions />
+                    <AchievementsSection />
+                </div>
+            </div>
+        </TabsContent>
+        <TabsContent value="notifications" className="mt-6">
             <MotivationalMessage />
-          </div>
-          
-          <div className="bg-card/50 p-6 rounded-lg">
-            <h3 className="font-headline text-xl font-semibold mb-4">My Submissions</h3>
-            <ul className="space-y-3 font-body">
-              <li className="flex justify-between items-center">
-                <span>"Cosmic Ocean"</span>
-                <span className="text-sm bg-green-200 text-green-800 px-2 py-0.5 rounded-full">Judged</span>
-              </li>
-              <li className="flex justify-between items-center">
-                <span>"City in Bloom"</span>
-                 <span className="text-sm bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full">In Judging</span>
-              </li>
-              <li className="flex justify-between items-center">
-                <span>"Silent Watcher"</span>
-                <span className="text-sm bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">Received</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
