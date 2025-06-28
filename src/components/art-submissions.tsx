@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -17,7 +18,7 @@ const submittedArtworks = [
     { id: 3, title: "Silent Watcher", imageUrl: "https://placehold.co/600x800.png", aiHint: "wildlife portrait", status: "Received" },
 ];
 
-export function ArtSubmissions() {
+export function ArtSubmissions({ level }: { level: number }) {
   const [submissions, setSubmissions] = useState(submittedArtworks);
   const { toast } = useToast();
 
@@ -38,7 +39,7 @@ export function ArtSubmissions() {
         <div className="flex justify-between items-center">
             <div>
                 <CardTitle className="font-headline text-2xl">My Art Submissions</CardTitle>
-                <CardDescription>Level 1 Competition</CardDescription>
+                <CardDescription>Level {level} Competition</CardDescription>
             </div>
             <Dialog>
                 <DialogTrigger asChild>

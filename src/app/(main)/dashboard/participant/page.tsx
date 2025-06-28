@@ -99,7 +99,7 @@ export default function ParticipantDashboard() {
                     <UpcomingEventsAlert />
                 </div>
                 <div className="lg:col-span-2 flex flex-col gap-8">
-                    <ArtSubmissions />
+                    <ArtSubmissions level={1} />
                     <AchievementsSection />
                 </div>
             </div>
