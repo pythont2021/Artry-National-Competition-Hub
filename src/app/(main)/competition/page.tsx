@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
 
+export const dynamic = 'force-dynamic';
+
 const features = [
   {
     icon: <Palette className="h-8 w-8" />,
