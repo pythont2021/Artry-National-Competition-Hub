@@ -1,4 +1,3 @@
-
 'use server';
 
 import { cookies } from 'next/headers';
@@ -12,7 +11,7 @@ export async function login(prevState: any, formData: FormData) {
   
   // Enrolled Participant credentials
   if (email === 'participant@artry.com' && password === 'participant123') {
-    cookies().set('auth-token', 'mock-user-session-token-for-participant-enrolled', {
+    cookies().set('auth-token', 'mock-user-session-token-for-participant:enrolled', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // Cookie expires in 1 day
@@ -23,7 +22,7 @@ export async function login(prevState: any, formData: FormData) {
 
   // Unenrolled Participant credentials
   if (email === 'unenrolled@artry.com' && password === 'unenrolled123') {
-    cookies().set('auth-token', 'mock-user-session-token-for-participant-not-enrolled', {
+    cookies().set('auth-token', 'mock-user-session-token-for-participant:not-enrolled', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // Cookie expires in 1 day
@@ -34,7 +33,7 @@ export async function login(prevState: any, formData: FormData) {
 
   // Unenrolled Artist credentials
   if (email === 'artist@artry.com' && password === 'artist123') {
-    cookies().set('auth-token', 'mock-user-session-token-for-artist-not-enrolled', {
+    cookies().set('auth-token', 'mock-user-session-token-for-artist:not-enrolled', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // Cookie expires in 1 day
@@ -45,7 +44,7 @@ export async function login(prevState: any, formData: FormData) {
 
   // Enrolled Artist credentials
   if (email === 'enrolled-artist@artry.com' && password === 'artist123') {
-    cookies().set('auth-token', 'mock-user-session-token-for-artist-enrolled', {
+    cookies().set('auth-token', 'mock-user-session-token-for-artist:enrolled', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // Cookie expires in 1 day

@@ -20,7 +20,7 @@ export default function ArtistDashboard() {
     redirect('/login?from=/dashboard/artist');
   }
 
-  const isEnrolled = authToken.includes('enrolled');
+  const isEnrolled = authToken.includes(':enrolled');
 
   const unenrolledArtist = {
     name: "Ravi Verma",

@@ -20,7 +20,7 @@ export default function ParticipantDashboard() {
     redirect('/login?from=/dashboard/participant');
   }
 
-  const isEnrolled = authToken.includes('enrolled');
+  const isEnrolled = authToken.includes(':enrolled');
 
   // Define mock users
   const enrolledUser = {

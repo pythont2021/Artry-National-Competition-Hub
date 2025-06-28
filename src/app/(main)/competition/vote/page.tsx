@@ -11,7 +11,7 @@ export default function VotePage() {
   }
 
   // Logged in, but not enrolled
-  if (!authToken.includes('enrolled')) {
+  if (!authToken.includes(':enrolled')) {
      const userType = authToken.includes('artist') ? 'artist' : 'participant';
      redirect(`/dashboard/${userType}`);
   }
