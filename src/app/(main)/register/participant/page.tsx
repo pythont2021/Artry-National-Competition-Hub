@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,192 +42,43 @@ const boards = [
     ],
   },
   {
-    heading: "Andhra Pradesh",
+    heading: "State Boards...",
     options: [
-      { value: "bieap-ap", label: "Board of Intermediate Education, Andhra Pradesh (BIEAP)" },
-      { value: "bseap-ap", label: "Board of Secondary Education, Andhra Pradesh (BSEAP)" },
-    ],
-  },
-  {
-    heading: "Arunachal Pradesh",
-    options: [
-        { value: "dse-arunachal", label: "Directorate of School Education, Arunachal Pradesh" },
-    ],
-  },
-  {
-    heading: "Assam",
-    options: [
-      { value: "seba-assam", label: "Board of Secondary Education, Assam (SEBA)" },
-      { value: "ahsec-assam", label: "Assam Higher Secondary Education Council (AHSEC)" },
-    ],
-  },
-  {
-    heading: "Bihar",
-    options: [
-        { value: "bseb-bihar", label: "Bihar School Examination Board (BSEB)" },
-    ],
-  },
-  {
-    heading: "Chhattisgarh",
-    options: [
-        { value: "cgbse-chhattisgarh", label: "Chhattisgarh Board of Secondary Education (CGBSE)" },
-    ],
-  },
-  {
-    heading: "Goa",
-    options: [
-        { value: "gbshse-goa", label: "Goa Board of Secondary and Higher Secondary Education (GBSHSE)" },
-    ],
-  },
-  {
-    heading: "Gujarat",
-    options: [
-        { value: "gseb-gujarat", label: "Gujarat Secondary and Higher Secondary Education Board (GSHSEB or GSEB)" },
-    ],
-  },
-  {
-    heading: "Haryana",
-    options: [
-        { value: "bseh-haryana", label: "Board of School Education Haryana (BSEH or HBSE)" },
-    ],
-  },
-  {
-    heading: "Himachal Pradesh",
-    options: [
-        { value: "hpbose-himachal", label: "Himachal Pradesh Board of School Education (HPBOSE)" },
-    ],
-  },
-  {
-    heading: "Jammu & Kashmir",
-    options: [
-        { value: "jkbose-jk", label: "Jammu and Kashmir Board of School Education (JKBOSE)" },
-    ],
-  },
-  {
-    heading: "Jharkhand",
-    options: [
-        { value: "jac-jharkhand", label: "Jharkhand Academic Council (JAC)" },
-    ],
-  },
-  {
-    heading: "Karnataka",
-    options: [
-      { value: "kseeb-karnataka", label: "Karnataka Secondary Education Examination Board (KSEEB)" },
-      { value: "dpue-karnataka", label: "Department of Pre-University Education (DPUE)" },
-    ],
-  },
-  {
-    heading: "Kerala",
-    options: [
-      { value: "kbpe-kerala", label: "Kerala Board of Public Examinations (KBPE)" },
-      { value: "dhse-kerala", label: "Directorate of Higher Secondary Education (DHSE)" },
-    ],
-  },
-  {
-    heading: "Madhya Pradesh",
-    options: [
-        { value: "mpbse-mp", label: "Board of Secondary Education, Madhya Pradesh (MPBSE)" },
-    ],
-  },
-  {
-    heading: "Maharashtra",
-    options: [
-        { value: "msbshse-maharashtra", label: "Maharashtra State Board of Secondary and Higher Secondary Education (MSBSHSE)" },
-    ],
-  },
-  {
-    heading: "Manipur",
-    options: [
-      { value: "bsem-manipur", label: "Board of Secondary Education, Manipur (BSEM)" },
-      { value: "cohsem-manipur", label: "Council of Higher Secondary Education, Manipur (COHSEM)" },
-    ],
-  },
-  {
-    heading: "Meghalaya",
-    options: [
-        { value: "mbose-meghalaya", label: "Meghalaya Board of School Education (MBOSE)" },
-    ],
-  },
-  {
-    heading: "Mizoram",
-    options: [
-        { value: "mbse-mizoram", label: "Mizoram Board of School Education (MBSE)" },
-    ],
-  },
-  {
-    heading: "Nagaland",
-    options: [
-        { value: "nbse-nagaland", label: "Nagaland Board of School Education (NBSE)" },
-    ],
-  },
-  {
-    heading: "Odisha",
-    options: [
-      { value: "bse-odisha", label: "Board of Secondary Education, Odisha (BSE Odisha)" },
-      { value: "chse-odisha", label: "Council of Higher Secondary Education, Odisha (CHSE Odisha)" },
-    ],
-  },
-  {
-    heading: "Punjab",
-    options: [
-        { value: "pseb-punjab", label: "Punjab School Education Board (PSEB)" },
-    ],
-  },
-  {
-    heading: "Rajasthan",
-    options: [
-        { value: "rbse-rajasthan", label: "Board of Secondary Education, Rajasthan (RBSE)" },
-    ],
-  },
-  {
-    heading: "Sikkim",
-    options: [
-        { value: "sbse-sikkim", label: "Sikkim Board of Secondary Education (SBSE)" },
-    ],
-  },
-  {
-    heading: "Tamil Nadu",
-    options: [
-        { value: "tndge-tamilnadu", label: "Directorate of Government Examinations, Tamil Nadu (TNDGE)" },
-    ],
-  },
-  {
-    heading: "Telangana",
-    options: [
-      { value: "tsbie-telangana", label: "Board of Intermediate Education, Telangana (TSBIE)" },
-      { value: "bse-telangana", label: "Board of Secondary Education, Telangana (BSE Telangana)" },
-    ],
-  },
-  {
-    heading: "Tripura",
-    options: [
-        { value: "tbse-tripura", label: "Tripura Board of Secondary Education (TBSE)" },
-    ],
-  },
-  {
-    heading: "Uttar Pradesh",
-    options: [
-        { value: "upmsp-up", label: "Uttar Pradesh Board of High School and Intermediate Education (UPMSP)" },
-    ],
-  },
-  {
-    heading: "Uttarakhand",
-    options: [
-        { value: "ubse-uttarakhand", label: "Uttarakhand Board of School Education (UBSE)" },
-    ],
-  },
-  {
-    heading: "West Bengal",
-    options: [
-      { value: "wbbse-wb", label: "West Bengal Board of Secondary Education (WBBSE)" },
-      { value: "wbchse-wb", label: "West Bengal Council of Higher Secondary Education (WBCHSE)" },
-    ],
+      { value: "ap", label: "Andhra Pradesh" },
+      { value: "ar", label: "Arunachal Pradesh" },
+      { value: "as", label: "Assam" },
+      { value: "br", label: "Bihar" },
+      { value: "cg", label: "Chhattisgarh" },
+      { value: "ga", label: "Goa" },
+      { value: "gj", label: "Gujarat" },
+      { value: "hr", label: "Haryana" },
+      { value: "hp", label: "Himachal Pradesh" },
+      { value: "jk", label: "Jammu and Kashmir" },
+      { value: "jh", label: "Jharkhand" },
+      { value: "ka", label: "Karnataka" },
+      { value: "kl", label: "Kerala" },
+      { value: "mp", label: "Madhya Pradesh" },
+      { value: "mh", label: "Maharashtra" },
+      { value: "mn", label: "Manipur" },
+      { value: "ml", label: "Meghalaya" },
+      { value: "mz", label: "Mizoram" },
+      { value: "nl", label: "Nagaland" },
+      { value: "od", label: "Odisha" },
+      { value: "pb", label: "Punjab" },
+      { value: "rj", label: "Rajasthan" },
+      { value: "sk", label: "Sikkim" },
+      { value: "tn", label: "Tamil Nadu" },
+      { value: "ts", label: "Telangana" },
+      { value: "tr", label: "Tripura" },
+      { value: "up", label: "Uttar Pradesh" },
+      { value: "uk", label: "Uttarakhand" },
+      { value: "wb", label: "West Bengal" },
+    ]
   },
   {
     heading: "Other / Open Boards",
     options: [
-      { value: "ignou", label: "Indira Gandhi National Open University (IGNOU)" },
-      { value: "dr-ambedkar-ou", label: "Dr. Ambedkar Open University" },
+      { value: "other", label: "Other" },
     ],
   },
 ];
@@ -278,7 +130,7 @@ const formSchema = z.object({
   (data) => {
     if (!data.dob) return true;
     const age = differenceInYears(new Date(), data.dob);
-    if (age >= 18 && age <= 22) {
+    if (age >= 18) { // Age 18+ must make a category choice
       return !!data.participantCategory;
     }
     return true;
@@ -325,11 +177,12 @@ export default function ParticipantRegisterPage() {
     if (dob) {
       const calculatedAge = differenceInYears(new Date(), dob);
       let group = "";
+      // Reset category choice on DOB change
       setShowCategoryChoice(false);
       form.setValue("participantCategory", undefined);
       form.clearErrors("participantCategory");
 
-      if (calculatedAge >= 18 && calculatedAge <= 22) {
+      if (calculatedAge >= 18) {
         setShowCategoryChoice(true);
         group = "Please select your category below.";
       } else {
@@ -340,9 +193,6 @@ export default function ParticipantRegisterPage() {
         } else if (calculatedAge >= 13 && calculatedAge <= 17) {
           group = "Intermediate (13-17 years)";
           form.setValue("participantCategory", "intermediate");
-        } else if (calculatedAge > 22) {
-          group = "Artist (23+ years)";
-          form.setValue("participantCategory", "artist");
         } else {
           group = "Not in eligible age range (must be 9+)";
            form.setValue("participantCategory", "ineligible");
@@ -515,7 +365,7 @@ export default function ParticipantRegisterPage() {
                   name="participantCategory"
                   render={({ field }) => (
                     <FormItem className="space-y-3 rounded-md border p-4">
-                      <FormLabel>Participant Category</FormLabel>
+                      <FormLabel>Participant Category (Age 18+)</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -535,16 +385,16 @@ export default function ParticipantRegisterPage() {
                               <RadioGroupItem value="artist" />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              Artist (18+ years, higher experience)
+                              Artist (18+ years, experienced)
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
-                      <Alert className="mt-4">
+                       <Alert variant="destructive" className="mt-4">
                         <Info className="h-4 w-4" />
-                        <AlertTitle>Note on 'Artist' Category</AlertTitle>
+                        <AlertTitle>Important: 'Artist' Category</AlertTitle>
                         <AlertDescription>
-                          Artists enter at a higher competition level (Level 4). To change category later, a new registration with a unique email/mobile is required.
+                          The 'Artist' category is for experienced creators and enters the competition directly at Level 4. Please choose carefully, as changing your category later will require a new registration.
                         </AlertDescription>
                       </Alert>
                       <FormMessage />

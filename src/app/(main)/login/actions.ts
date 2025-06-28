@@ -10,15 +10,48 @@ export async function login(prevState: any, formData: FormData) {
 
   // In a real application, you would validate user credentials against a database.
   
-  // Participant credentials
+  // Enrolled Participant credentials
   if (email === 'participant@artry.com' && password === 'participant123') {
-    cookies().set('auth-token', 'mock-user-session-token-for-participant', {
+    cookies().set('auth-token', 'mock-user-session-token-for-participant-enrolled', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // Cookie expires in 1 day
       path: '/',
     });
     redirect('/dashboard/participant');
+  }
+
+  // Unenrolled Participant credentials
+  if (email === 'unenrolled@artry.com' && password === 'unenrolled123') {
+    cookies().set('auth-token', 'mock-user-session-token-for-participant-unenrolled', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // Cookie expires in 1 day
+      path: '/',
+    });
+    redirect('/dashboard/participant');
+  }
+
+  // Artist credentials
+  if (email === 'artist@artry.com' && password === 'artist123') {
+    cookies().set('auth-token', 'mock-user-session-token-for-artist-enrolled', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // Cookie expires in 1 day
+      path: '/',
+    });
+    redirect('/dashboard/artist');
+  }
+  
+  // Audience credentials
+  if (email === 'audience@artry.com' && password === 'audience123') {
+    cookies().set('auth-token', 'mock-user-session-token-for-audience', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // Cookie expires in 1 day
+      path: '/',
+    });
+    redirect('/dashboard/audience');
   }
 
   // Volunteer credentials

@@ -12,16 +12,21 @@ export default function MainLayout({
 }) {
   const authToken = cookies().get('auth-token')?.value;
   const isLoggedIn = !!authToken;
-  let userType = undefined;
+  let userType: string | undefined = undefined;
+  
   if (authToken) {
       if (authToken.includes('participant')) {
           userType = 'participant';
+      } else if (authToken.includes('artist')) {
+          userType = 'artist';
       } else if (authToken.includes('volunteer')) {
           userType = 'volunteer';
       } else if (authToken.includes('jury')) {
           userType = 'jury';
       } else if (authToken.includes('vendor')) {
           userType = 'vendor';
+      } else if (authToken.includes('audience')) {
+          userType = 'audience';
       }
   }
 

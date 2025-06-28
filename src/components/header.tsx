@@ -74,8 +74,12 @@ export function Header({ isLoggedIn, userType }: { isLoggedIn: boolean, userType
             return '/dashboard/jury';
         case 'vendor':
             return '/dashboard/vendor';
+        case 'artist':
+            return '/dashboard/artist';
+        case 'audience':
+            return '/dashboard/audience';
         default:
-            return '/dashboard/participant';
+            return '/login';
     }
   }
 

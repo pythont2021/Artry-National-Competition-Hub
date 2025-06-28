@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useActionState } from "react";
@@ -10,11 +11,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogIn } from "lucide-react";
 import { login } from "./actions";
 import { Label } from "@/components/ui/label";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 
 const otpFormSchema = z.object({
@@ -123,6 +125,24 @@ export default function LoginPage() {
             </p>
           </div>
         </CardContent>
+        <CardFooter>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="text-sm">View Mock User Credentials</AccordionTrigger>
+                <AccordionContent>
+                  <div className="text-xs text-muted-foreground space-y-2">
+                    <p><b>Enrolled Participant:</b><br/>participant@artry.com / participant123</p>
+                    <p><b>Unenrolled Participant:</b><br/>unenrolled@artry.com / unenrolled123</p>
+                    <p><b>Artist:</b><br/>artist@artry.com / artist123</p>
+                    <p><b>Audience:</b><br/>audience@artry.com / audience123</p>
+                    <p><b>Volunteer:</b><br/>volunteer@artry.com / volunteer123</p>
+                    <p><b>Jury:</b><br/>jury@artry.com / jury123</p>
+                    <p><b>Vendor:</b><br/>vendor@artry.com / vendor123</p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+        </CardFooter>
       </Card>
     </div>
   );
