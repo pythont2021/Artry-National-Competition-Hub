@@ -11,7 +11,7 @@ export async function login(prevState: any, formData: FormData) {
   // In a real application, you would validate user credentials against a database.
   
   // Participant credentials
-  if (email === 'pythont2021@gmail.com' && password === '123456798') {
+  if (email === 'participant@artry.com' && password === 'participant123') {
     cookies().set('auth-token', 'mock-user-session-token-for-participant', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

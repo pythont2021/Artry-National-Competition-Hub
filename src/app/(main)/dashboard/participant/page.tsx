@@ -18,13 +18,13 @@ export default function ParticipantDashboard() {
   }
 
   const user = {
-    name: "Priya Sharma",
-    avatarUrl: "https://i.pravatar.cc/150?u=Priya%20Sharma",
+    name: "Aryan Patel",
+    avatarUrl: "https://i.pravatar.cc/150?u=Aryan%20Patel",
     description: "Participant Profile",
     details: [
-        { icon: <User className="h-4 w-4" />, label: "Junior (9-12 years)" },
-        { icon: <GraduationCap className="h-4 w-4" />, label: "Class 10" },
-        { icon: <School className="h-4 w-4" />, label: "Delhi Public School" }
+        { icon: <User className="h-4 w-4" />, label: "Senior (18-22 years)" },
+        { icon: <GraduationCap className="h-4 w-4" />, label: "B.F.A. 2nd Year" },
+        { icon: <School className="h-4 w-4" />, label: "National Institute of Design" }
     ]
   }
 
