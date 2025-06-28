@@ -1,7 +1,8 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { User, Shield, GraduationCap } from "lucide-react";
+import { User, Shield, GraduationCap, ShoppingCart } from "lucide-react";
 
 const registrationTypes = [
   {
@@ -20,10 +21,17 @@ const registrationTypes = [
   },
   {
     icon: <Shield className="h-8 w-8 text-primary" />,
-    title: "Judiciary / Jury",
+    title: "Jury",
     description: "Apply to be a part of our esteemed jury to help us discover the next generation of artists.",
     href: "/register/jury",
     cta: "Register as Jury",
+  },
+    {
+    icon: <ShoppingCart className="h-8 w-8 text-primary" />,
+    title: "Vendor",
+    description: "Register as a vendor to partner with us for competition-related services and supplies.",
+    href: "/register/vendor",
+    cta: "Register as Vendor",
   },
 ];
 
@@ -39,7 +47,7 @@ export default function RegisterPage() {
         </p>
       </section>
 
-      <section className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {registrationTypes.map((type) => (
           <Card key={type.title} className="flex flex-col text-center">
             <CardHeader>

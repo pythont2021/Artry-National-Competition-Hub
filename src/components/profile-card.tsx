@@ -1,15 +1,21 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { User, GraduationCap, School } from "lucide-react";
+import { ReactNode } from "react";
+
+type ProfileDetail = {
+    icon: ReactNode;
+    label: string;
+}
 
 type ProfileCardProps = {
     name: string;
     avatarUrl: string;
-    category: string;
-    school: string;
+    description: string;
+    details: ProfileDetail[];
 };
 
-export function ProfileCard({ name, avatarUrl, category, school }: ProfileCardProps) {
+export function ProfileCard({ name, avatarUrl, description, details }: ProfileCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center gap-4">
@@ -19,22 +25,16 @@ export function ProfileCard({ name, avatarUrl, category, school }: ProfileCardPr
         </Avatar>
         <div>
           <CardTitle className="font-headline text-2xl">{name}</CardTitle>
-          <CardDescription>Participant Profile</CardDescription>
+          <CardDescription>{description}</CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-3 font-body text-sm">
-        <div className="flex items-center gap-2 text-muted-foreground">
-            <User className="h-4 w-4" />
-            <span>{category}</span>
-        </div>
-        <div className="flex items-center gap-2 text-muted-foreground">
-            <GraduationCap className="h-4 w-4" />
-            <span>Class 10</span>
-        </div>
-        <div className="flex items-center gap-2 text-muted-foreground">
-            <School className="h-4 w-4" />
-            <span>{school}</span>
-        </div>
+        {details.map((detail, index) => (
+            <div key={index} className="flex items-center gap-2 text-muted-foreground">
+                {detail.icon}
+                <span>{detail.label}</span>
+            </div>
+        ))}
       </CardContent>
     </Card>
   );

@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -62,6 +63,21 @@ const navLinks = [
 
 export function Header({ isLoggedIn, userType }: { isLoggedIn: boolean, userType?: string }) {
   const pathname = usePathname();
+
+  const getDashboardLink = () => {
+    switch(userType) {
+        case 'participant':
+            return '/dashboard/participant';
+        case 'volunteer':
+            return '/dashboard/volunteer';
+        case 'jury':
+            return '/dashboard/jury';
+        case 'vendor':
+            return '/dashboard/vendor';
+        default:
+            return '/dashboard/participant';
+    }
+  }
 
   const renderLink = (link: any, isMobile = false) => {
     if (link.subLinks) {
@@ -176,7 +192,7 @@ export function Header({ isLoggedIn, userType }: { isLoggedIn: boolean, userType
           {isLoggedIn ? (
             <>
               <Button asChild>
-                <Link href={userType === 'volunteer' ? "/dashboard/volunteer" : "/dashboard/participant"}>Dashboard</Link>
+                <Link href={getDashboardLink()}>Dashboard</Link>
               </Button>
               <form action={logout}>
                 <Button type="submit" variant="ghost">

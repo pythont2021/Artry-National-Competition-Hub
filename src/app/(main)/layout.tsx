@@ -1,3 +1,4 @@
+
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { cookies } from "next/headers";
@@ -17,6 +18,10 @@ export default function MainLayout({
           userType = 'participant';
       } else if (authToken.includes('volunteer')) {
           userType = 'volunteer';
+      } else if (authToken.includes('jury')) {
+          userType = 'jury';
+      } else if (authToken.includes('vendor')) {
+          userType = 'vendor';
       }
   }
 

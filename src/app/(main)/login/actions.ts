@@ -1,3 +1,4 @@
+
 'use server';
 
 import { cookies } from 'next/headers';
@@ -29,6 +30,28 @@ export async function login(prevState: any, formData: FormData) {
       path: '/',
     });
     redirect('/dashboard/volunteer');
+  }
+
+  // Jury credentials
+  if (email === 'jury@artry.com' && password === 'jury123') {
+     cookies().set('auth-token', 'mock-user-session-token-for-jury', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // Cookie expires in 1 day
+      path: '/',
+    });
+    redirect('/dashboard/jury');
+  }
+  
+  // Vendor credentials
+  if (email === 'vendor@artry.com' && password === 'vendor123') {
+     cookies().set('auth-token', 'mock-user-session-token-for-vendor', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // Cookie expires in 1 day
+      path: '/',
+    });
+    redirect('/dashboard/vendor');
   }
 
   // If credentials don't match, return an error message.

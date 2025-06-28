@@ -1,3 +1,4 @@
+
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,6 +7,7 @@ import { UpcomingEventsAlert } from "@/components/upcoming-events-alert";
 import { ArtSubmissions } from "@/components/art-submissions";
 import { AchievementsSection } from "@/components/achievements-section";
 import { MotivationalMessage } from "@/components/motivational-message";
+import { GraduationCap, School, User } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,8 +20,12 @@ export default function ParticipantDashboard() {
   const user = {
     name: "Priya Sharma",
     avatarUrl: "https://i.pravatar.cc/150?u=Priya%20Sharma",
-    category: "Junior (9-12 years)",
-    school: "Delhi Public School",
+    description: "Participant Profile",
+    details: [
+        { icon: <User className="h-4 w-4" />, label: "Junior (9-12 years)" },
+        { icon: <GraduationCap className="h-4 w-4" />, label: "Class 10" },
+        { icon: <School className="h-4 w-4" />, label: "Delhi Public School" }
+    ]
   }
 
   return (
@@ -40,8 +46,8 @@ export default function ParticipantDashboard() {
                     <ProfileCard 
                         name={user.name}
                         avatarUrl={user.avatarUrl}
-                        category={user.category}
-                        school={user.school}
+                        description={user.description}
+                        details={user.details}
                     />
                     <UpcomingEventsAlert />
                 </div>
