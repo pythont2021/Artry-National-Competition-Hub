@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Award, Palette, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 const features = [
   {
@@ -23,6 +24,8 @@ const features = [
 ]
 
 export default function CompetitionHome() {
+  const isLoggedIn = !!cookies().get('auth-token')?.value;
+
   return (
     <>
       <section className="py-20 sm:py-32 bg-primary/5">
@@ -34,9 +37,15 @@ export default function CompetitionHome() {
             Where creativity finds its stage. A celebration of young artists shaping the future of art.
           </p>
           <div className="mt-8 flex justify-center gap-4">
-            <Button asChild size="lg">
-              <Link href="/register">Register Now</Link>
-            </Button>
+            {isLoggedIn ? (
+              <Button asChild size="lg">
+                <Link href="/dashboard/participant">Go to Dashboard</Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg">
+                <Link href="/register">Register Now</Link>
+              </Button>
+            )}
             <Button asChild variant="outline" size="lg">
               <Link href="/competition/gallery">View Gallery</Link>
             </Button>
