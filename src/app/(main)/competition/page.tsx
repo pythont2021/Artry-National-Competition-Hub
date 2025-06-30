@@ -111,16 +111,16 @@ export default function CompetitionHome() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="group overflow-hidden rounded-lg">
-              <Image src="https://placehold.co/400x500.png" alt="Artwork 1" width={400} height={500} data-ai-hint="abstract painting" className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
+              <Image src="https://images.pexels.com/photos/1616403/pexels-photo-1616403.jpeg" alt="Artwork 1" width={400} height={500} data-ai-hint="abstract painting" className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
             </div>
             <div className="group overflow-hidden rounded-lg">
-              <Image src="https://placehold.co/400x500.png" alt="Artwork 2" width={400} height={500} data-ai-hint="portrait oil" className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
+              <Image src="https://images.pexels.com/photos/1193743/pexels-photo-1193743.jpeg" alt="Artwork 2" width={400} height={500} data-ai-hint="portrait oil" className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
             </div>
             <div className="group overflow-hidden rounded-lg">
-              <Image src="https://placehold.co/400x500.png" alt="Artwork 3" width={400} height={500} data-ai-hint="landscape watercolor" className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
+              <Image src="https://images.pexels.com/photos/19680/pexels-photo-19680.jpeg" alt="Artwork 3" width={400} height={500} data-ai-hint="landscape watercolor" className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
             </div>
             <div className="group overflow-hidden rounded-lg">
-              <Image src="https://placehold.co/400x500.png" alt="Artwork 4" width={400} height={500} data-ai-hint="modern sculpture" className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
+              <Image src="https://images.pexels.com/photos/803290/pexels-photo-803290.jpeg" alt="Artwork 4" width={400} height={500} data-ai-hint="modern sculpture" className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
             </div>
           </div>
            <div className="mt-12 text-center">

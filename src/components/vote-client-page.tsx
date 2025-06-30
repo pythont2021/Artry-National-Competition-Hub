@@ -17,14 +17,14 @@ type Artwork = {
 };
 
 const initialArtworks: Artwork[] = [
-  { id: 1, title: "Cosmic Ocean", artist: "Priya S.", imageUrl: "https://placehold.co/600x800.png", aiHint: "abstract space" },
-  { id: 2, title: "City in Bloom", artist: "Rohan M.", imageUrl: "https://placehold.co/600x800.png", aiHint: "cityscape floral" },
-  { id: 3, title: "Silent Watcher", artist: "Aisha K.", imageUrl: "https://placehold.co/600x800.png", aiHint: "wildlife portrait" },
-  { id: 4, title: "Forgotten Melody", artist: "Vikram R.", imageUrl: "https://placehold.co/600x800.png", aiHint: "still life" },
-  { id: 5, title: "Sunset over Ganges", artist: "Ananya D.", imageUrl: "https://placehold.co/600x800.png", aiHint: "river sunset" },
-  { id: 6, title: "Digital Dreams", artist: "Samir P.", imageUrl: "https://placehold.co/600x800.png", aiHint: "surreal digital" },
-  { id: 7, title: "Market Morning", artist: "Deepa G.", imageUrl: "https://placehold.co/600x800.png", aiHint: "market scene" },
-  { id: 8, title: "Monsoon Mist", artist: "Arjun V.", imageUrl: "https://placehold.co/600x800.png", aiHint: "rainy landscape" },
+  { id: 1, title: "Cosmic Ocean", artist: "Priya S.", imageUrl: "https://images.pexels.com/photos/1209843/pexels-photo-1209843.jpeg", aiHint: "abstract space" },
+  { id: 2, title: "City in Bloom", artist: "Rohan M.", imageUrl: "https://images.pexels.com/photos/1484771/pexels-photo-1484771.jpeg", aiHint: "cityscape floral" },
+  { id: 3, title: "Silent Watcher", artist: "Aisha K.", imageUrl: "https://images.pexels.com/photos/733475/pexels-photo-733475.jpeg", aiHint: "wildlife portrait" },
+  { id: 4, title: "Forgotten Melody", artist: "Vikram R.", imageUrl: "https://images.pexels.com/photos/326501/pexels-photo-326501.jpeg", aiHint: "still life" },
+  { id: 5, title: "Sunset over Ganges", artist: "Ananya D.", imageUrl: "https://images.pexels.com/photos/2693212/pexels-photo-2693212.jpeg", aiHint: "river sunset" },
+  { id: 6, title: "Digital Dreams", artist: "Samir P.", imageUrl: "https://images.pexels.com/photos/1707215/pexels-photo-1707215.jpeg", aiHint: "surreal digital" },
+  { id: 7, title: "Market Morning", artist: "Deepa G.", imageUrl: "https://images.pexels.com/photos/262780/pexels-photo-262780.jpeg", aiHint: "market scene" },
+  { id: 8, title: "Monsoon Mist", artist: "Arjun V.", imageUrl: "https://images.pexels.com/photos/540518/pexels-photo-540518.jpeg", aiHint: "rainy landscape" },
 ];
 
 export function VoteClientPage() {

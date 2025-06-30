@@ -13,9 +13,9 @@ import { Label } from "./ui/label";
 import { useToast } from "@/hooks/use-toast";
 
 const submittedArtworks = [
-    { id: 1, title: "Cosmic Ocean", imageUrl: "https://placehold.co/600x800.png", aiHint: "abstract space", status: "Judged" },
-    { id: 2, title: "City in Bloom", imageUrl: "https://placehold.co/600x800.png", aiHint: "cityscape floral", status: "In Judging" },
-    { id: 3, title: "Silent Watcher", imageUrl: "https://placehold.co/600x800.png", aiHint: "wildlife portrait", status: "Received" },
+    { id: 1, title: "Cosmic Ocean", imageUrl: "https://images.pexels.com/photos/1209843/pexels-photo-1209843.jpeg", aiHint: "abstract space", status: "Judged" },
+    { id: 2, title: "City in Bloom", imageUrl: "https://images.pexels.com/photos/1484771/pexels-photo-1484771.jpeg", aiHint: "cityscape floral", status: "In Judging" },
+    { id: 3, title: "Silent Watcher", imageUrl: "https://images.pexels.com/photos/733475/pexels-photo-733475.jpeg", aiHint: "wildlife portrait", status: "Received" },
 ];
 
 export function ArtSubmissions({ level }: { level: number }) {

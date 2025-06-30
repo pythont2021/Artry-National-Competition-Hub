@@ -59,7 +59,7 @@ export function AchievementsSection() {
             </div>
           ))}
            <div className="flex items-start gap-4 p-4 border-2 border-dashed rounded-lg bg-muted/50">
-                <Image src="https://placehold.co/150x100.png" alt="Winner Memento" width={150} height={100} data-ai-hint="trophy award" className="rounded-md" />
+                <Image src="https://images.pexels.com/photos/355952/pexels-photo-355952.jpeg" alt="Winner Memento" width={150} height={100} data-ai-hint="trophy award" className="rounded-md object-cover" />
                 <div className="flex-grow">
                     <h3 className="font-semibold">Winner's Memento</h3>
                     <p className="text-sm text-muted-foreground">A snapshot from the Level 1 offline awards ceremony. Congratulations!</p>

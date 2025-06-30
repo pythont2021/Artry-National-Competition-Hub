@@ -39,7 +39,7 @@ export default function AboutArtPage() {
           </div>
         </div>
         <div className="overflow-hidden rounded-lg shadow-xl">
-           <Image src="https://placehold.co/600x400.png" alt="Artistic endeavor" width={600} height={400} data-ai-hint="art studio" className="h-full w-full object-cover" />
+           <Image src="https://images.pexels.com/photos/102127/pexels-photo-102127.jpeg" alt="Artistic endeavor" width={600} height={400} data-ai-hint="art studio" className="h-full w-full object-cover" />
         </div>
       </section>
 
