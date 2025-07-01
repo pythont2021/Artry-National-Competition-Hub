@@ -3,6 +3,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useFormStatus, useActionState } from "react-dom";
 import * as z from "zod";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
@@ -30,6 +31,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import Image from "next/image";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { registerParticipant } from "./actions";
 
 const boards = [
   {
@@ -41,35 +43,35 @@ const boards = [
       { value: "nios", label: "National Institute of Open Schooling (NIOS)" },
     ],
   },
-  { heading: "Andhra Pradesh", options: [{ value: "ap", label: "Board of Secondary Education, Andhra Pradesh" }] },
-  { heading: "Arunachal Pradesh", options: [{ value: "ar", label: "Directorate of School Education, Arunachal Pradesh" }] },
-  { heading: "Assam", options: [{ value: "as", label: "Board of Secondary Education, Assam (SEBA)" }] },
-  { heading: "Bihar", options: [{ value: "br", label: "Bihar School Examination Board (BSEB)" }] },
-  { heading: "Chhattisgarh", options: [{ value: "cg", label: "Chhattisgarh Board of Secondary Education (CGBSE)" }] },
-  { heading: "Goa", options: [{ value: "ga", label: "Goa Board of Secondary & Higher Secondary Education" }] },
-  { heading: "Gujarat", options: [{ value: "gj", label: "Gujarat Secondary & Higher Secondary Education Board (GSEB)" }] },
-  { heading: "Haryana", options: [{ value: "hr", label: "Board of School Education Haryana (BSEH)" }] },
-  { heading: "Himachal Pradesh", options: [{ value: "hp", label: "Himachal Pradesh Board of School Education (HPBOSE)" }] },
-  { heading: "Jammu and Kashmir", options: [{ value: "jk", label: "Jammu and Kashmir State Board of School Education (JKBOSE)" }] },
-  { heading: "Jharkhand", options: [{ value: "jh", label: "Jharkhand Academic Council (JAC)" }] },
-  { heading: "Karnataka", options: [{ value: "ka", label: "Karnataka School Examination and Assessment Board (KSEAB)" }] },
-  { heading: "Kerala", options: [{ value: "kl", label: "Kerala Board of Public Examinations (KBPE)" }] },
-  { heading: "Madhya Pradesh", options: [{ value: "mp", label: "Board of Secondary Education, Madhya Pradesh (MPBSE)" }] },
-  { heading: "Maharashtra", options: [{ value: "mh", label: "Maharashtra State Board of Secondary & Higher Secondary Education" }] },
-  { heading: "Manipur", options: [{ value: "mn", label: "Board of Secondary Education, Manipur (BSEM)" }] },
-  { heading: "Meghalaya", options: [{ value: "ml", label: "Meghalaya Board of School Education (MBOSE)" }] },
-  { heading: "Mizoram", options: [{ value: "mz", label: "Mizoram Board of School Education (MBSE)" }] },
-  { heading: "Nagaland", options: [{ value: "nl", label: "Nagaland Board of School Education (NBSE)" }] },
-  { heading: "Odisha", options: [{ value: "od", label: "Board of Secondary Education, Odisha" }] },
-  { heading: "Punjab", options: [{ value: "pb", label: "Punjab School Education Board (PSEB)" }] },
-  { heading: "Rajasthan", options: [{ value: "rj", label: "Board of Secondary Education, Rajasthan (BSER)" }] },
-  { heading: "Sikkim", options: [{ value: "sk", label: "Sikkim Board of Secondary Education" }] },
-  { heading: "Tamil Nadu", options: [{ value: "tn", label: "Directorate of Government Examinations, Tamil Nadu" }] },
-  { heading: "Telangana", options: [{ value: "ts", label: "Board of Secondary Education, Telangana (BSE Telangana)" }] },
-  { heading: "Tripura", options: [{ value: "tr", label: "Tripura Board of Secondary Education (TBSE)" }] },
-  { heading: "Uttar Pradesh", options: [{ value: "up", label: "Uttar Pradesh Madhyamik Shiksha Parishad (UPMSP)" }] },
-  { heading: "Uttarakhand", options: [{ value: "uk", label: "Uttarakhand Board of School Education (UBSE)" }] },
-  { heading: "West Bengal", options: [{ value: "wb", label: "West Bengal Board of Secondary Education (WBBSE)" }] },
+  { heading: "Andhra Pradesh", options: [{ value: "bseap", label: "Board of Secondary Education, Andhra Pradesh" }] },
+  { heading: "Arunachal Pradesh", options: [{ value: "dseap", label: "Directorate of School Education, Arunachal Pradesh" }] },
+  { heading: "Assam", options: [{ value: "seba", label: "Board of Secondary Education, Assam (SEBA)" }] },
+  { heading: "Bihar", options: [{ value: "bseb", label: "Bihar School Examination Board (BSEB)" }] },
+  { heading: "Chhattisgarh", options: [{ value: "cgbse", label: "Chhattisgarh Board of Secondary Education (CGBSE)" }] },
+  { heading: "Goa", options: [{ value: "gbshse", label: "Goa Board of Secondary & Higher Secondary Education" }] },
+  { heading: "Gujarat", options: [{ value: "gseb", label: "Gujarat Secondary & Higher Secondary Education Board (GSEB)" }] },
+  { heading: "Haryana", options: [{ value: "bseh", label: "Board of School Education Haryana (BSEH)" }] },
+  { heading: "Himachal Pradesh", options: [{ value: "hpbose", label: "Himachal Pradesh Board of School Education (HPBOSE)" }] },
+  { heading: "Jammu and Kashmir", options: [{ value: "jkbose", label: "Jammu and Kashmir State Board of School Education (JKBOSE)" }] },
+  { heading: "Jharkhand", options: [{ value: "jac", label: "Jharkhand Academic Council (JAC)" }] },
+  { heading: "Karnataka", options: [{ value: "kseab", label: "Karnataka School Examination and Assessment Board (KSEAB)" }] },
+  { heading: "Kerala", options: [{ value: "kbpe", label: "Kerala Board of Public Examinations (KBPE)" }] },
+  { heading: "Madhya Pradesh", options: [{ value: "mpbse", label: "Board of Secondary Education, Madhya Pradesh (MPBSE)" }] },
+  { heading: "Maharashtra", options: [{ value: "msbshse", label: "Maharashtra State Board of Secondary & Higher Secondary Education" }] },
+  { heading: "Manipur", options: [{ value: "bsem", label: "Board of Secondary Education, Manipur (BSEM)" }] },
+  { heading: "Meghalaya", options: [{ value: "mbose", label: "Meghalaya Board of School Education (MBOSE)" }] },
+  { heading: "Mizoram", options: [{ value: "mbse", label: "Mizoram Board of School Education (MBSE)" }] },
+  { heading: "Nagaland", options: [{ value: "nbse", label: "Nagaland Board of School Education (NBSE)" }] },
+  { heading: "Odisha", options: [{ value: "bseodisha", label: "Board of Secondary Education, Odisha" }] },
+  { heading: "Punjab", options: [{ value: "pseb", label: "Punjab School Education Board (PSEB)" }] },
+  { heading: "Rajasthan", options: [{ value: "bser", label: "Board of Secondary Education, Rajasthan (BSER)" }] },
+  { heading: "Sikkim", options: [{ value: "sbse", label: "Sikkim Board of Secondary Education" }] },
+  { heading: "Tamil Nadu", options: [{ value: "dge", label: "Directorate of Government Examinations, Tamil Nadu" }] },
+  { heading: "Telangana", options: [{ value: "bsetg", label: "Board of Secondary Education, Telangana (BSE Telangana)" }] },
+  { heading: "Tripura", options: [{ value: "tbse", label: "Tripura Board of Secondary Education (TBSE)" }] },
+  { heading: "Uttar Pradesh", options: [{ value: "upmsp", label: "Uttar Pradesh Madhyamik Shiksha Parishad (UPMSP)" }] },
+  { heading: "Uttarakhand", options: [{ value: "ubse", label: "Uttarakhand Board of School Education (UBSE)" }] },
+  { heading: "West Bengal", options: [{ value: "wbbse", label: "West Bengal Board of Secondary Education (WBBSE)" }] },
   {
     heading: "Other / Open Boards",
     options: [
@@ -136,12 +138,21 @@ const formSchema = z.object({
   }
 );
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" size="lg" disabled={pending}>
+      {pending ? "Creating Account..." : "Create Account"}
+    </Button>
+  );
+}
 
 export default function ParticipantRegisterPage() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
   const [showCategoryChoice, setShowCategoryChoice] = useState(false);
+  const [state, formAction] = useActionState(registerParticipant, undefined);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -212,16 +223,17 @@ export default function ParticipantRegisterPage() {
       } else {
         setProfilePhotoPreview(null);
       }
-    }, [photo])
+    }, [photo]);
 
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Registration Successful",
-      description: "Your account has been created. Welcome, artist!",
-    });
-  }
+  useEffect(() => {
+    if (state?.error) {
+      toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: state.error,
+      });
+    }
+  }, [state, toast]);
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">
@@ -235,7 +247,7 @@ export default function ParticipantRegisterPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form action={formAction} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
@@ -366,6 +378,7 @@ export default function ParticipantRegisterPage() {
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                           className="flex flex-col space-y-1"
+                          name={field.name}
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
@@ -637,7 +650,7 @@ export default function ParticipantRegisterPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" size="lg">Create Account</Button>
+              <SubmitButton />
             </form>
           </Form>
         </CardContent>
@@ -645,4 +658,3 @@ export default function ParticipantRegisterPage() {
     </div>
   );
 }
-

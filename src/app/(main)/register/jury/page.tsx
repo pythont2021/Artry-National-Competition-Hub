@@ -2,9 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useFormStatus, useActionState } from "react-dom";
 import * as z from "zod";
 import Link from "next/link";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,6 +19,9 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield } from "lucide-react";
+import { registerJury } from "./actions";
+import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -35,8 +38,19 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 });
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" size="lg" disabled={pending}>
+      {pending ? "Submitting Application..." : "Submit Application"}
+    </Button>
+  );
+}
+
+
 export default function JuryRegisterPage() {
   const { toast } = useToast();
+  const [state, formAction] = useActionState(registerJury, undefined);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,13 +65,15 @@ export default function JuryRegisterPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Jury Registration Submitted",
-      description: "Thank you for your interest. We will review your application.",
-    });
-  }
+  useEffect(() => {
+    if (state?.error) {
+      toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: state.error,
+      });
+    }
+  }, [state, toast]);
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">
@@ -71,7 +87,7 @@ export default function JuryRegisterPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form action={formAction} className="space-y-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -182,9 +198,7 @@ export default function JuryRegisterPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" size="lg">
-                Submit Application
-              </Button>
+              <SubmitButton />
             </form>
           </Form>
         </CardContent>

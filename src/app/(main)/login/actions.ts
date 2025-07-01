@@ -103,5 +103,25 @@ export async function login(prevState: any, formData: FormData) {
 
 export async function logout() {
   cookies().delete('auth-token');
-  redirect('/login');
+  redirect('/login?message=logout-success');
+}
+
+export async function enrollUser(formData: FormData) {
+  const cookieStore = cookies();
+  const authToken = cookieStore.get('auth-token')?.value;
+  const userCategory = formData.get('userCategory');
+
+  if (authToken && authToken.includes(':not-enrolled')) {
+    const newAuthToken = authToken.replace(':not-enrolled', ':enrolled');
+    cookieStore.set('auth-token', newAuthToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // 1 day
+      path: '/',
+    });
+    // Redirect will cause the browser to get the new cookie and re-render the dashboard.
+    redirect(`/dashboard/${userCategory}`);
+  }
+  // Optional: Handle cases where the user is already enrolled or not logged in
+  return { error: 'Enrollment failed. User is not eligible or already enrolled.' };
 }

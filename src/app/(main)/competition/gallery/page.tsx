@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Users, ThumbsUp, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
-const artworks = [
+const initialArtworks = [
   { id: 1, title: "Cosmic Ocean", artist: "Priya S.", imageUrl: "https://images.pexels.com/photos/1209843/pexels-photo-1209843.jpeg", aiHint: "abstract space", participantLikes: 120, audienceLikes: 450, juryRating: 9 },
   { id: 2, title: "City in Bloom", artist: "Rohan M.", imageUrl: "https://images.pexels.com/photos/1484771/pexels-photo-1484771.jpeg", aiHint: "cityscape floral", participantLikes: 95, audienceLikes: 380, juryRating: 7 },
   { id: 3, title: "Silent Watcher", artist: "Aisha K.", imageUrl: "https://images.pexels.com/photos/733475/pexels-photo-733475.jpeg", aiHint: "wildlife portrait", participantLikes: 150, audienceLikes: 600, juryRating: 10 },
@@ -14,6 +19,19 @@ const artworks = [
 ];
 
 export default function GalleryPage() {
+  const [artworks, setArtworks] = useState(initialArtworks);
+  const { toast } = useToast();
+
+  const handleLike = (id: number) => {
+    setArtworks(artworks.map(art => 
+      art.id === id ? { ...art, audienceLikes: art.audienceLikes + 1 } : art
+    ));
+    toast({
+        title: "Liked!",
+        description: "Your appreciation has been noted."
+    })
+  };
+
   return (
     <div className="container mx-auto px-4 py-16">
       <section className="text-center">
@@ -58,6 +76,12 @@ export default function GalleryPage() {
                     <span className="flex items-center gap-2"><Shield className="h-4 w-4" /> Jury</span>
                     <span className="font-semibold text-foreground">{artwork.juryRating}/10</span>
                 </div>
+              </div>
+              <div className="mt-4">
+                  <Button variant="outline" className="w-full" onClick={() => handleLike(artwork.id)}>
+                      <ThumbsUp className="h-4 w-4" />
+                      Like
+                  </Button>
               </div>
             </CardContent>
           </Card>

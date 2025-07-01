@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useActionState } from "react";
+import { useEffect, useActionState, Suspense } from "react";
 import { useFormStatus } from "react-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,6 +17,7 @@ import { LogIn } from "lucide-react";
 import { login } from "./actions";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useSearchParams } from "next/navigation";
 
 
 const otpFormSchema = z.object({
@@ -32,6 +33,23 @@ function LoginButton() {
       {pending ? 'Logging in...' : 'Login with Password'}
     </Button>
   );
+}
+
+function LoginMessages() {
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const message = searchParams.get('message');
+    if (message === 'logout-success') {
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+    }
+  }, [searchParams, toast]);
+
+  return null;
 }
 
 export default function LoginPage() {
@@ -66,6 +84,9 @@ export default function LoginPage() {
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">
+      <Suspense fallback={<div>Loading...</div>}>
+        <LoginMessages />
+      </Suspense>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
            <div className="mx-auto bg-primary text-primary-foreground rounded-full p-3 w-fit mb-4">

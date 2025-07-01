@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useFormStatus, useActionState } from "react-dom";
 import * as z from "zod";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -19,7 +20,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Copy, RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { registerTeacher } from "./actions";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -36,6 +38,15 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 });
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" size="lg" disabled={pending}>
+      {pending ? "Creating Account..." : "Create Account"}
+    </Button>
+  );
+}
+
 
 export default function TeacherRegisterPage() {
   const { toast } = useToast();
@@ -43,6 +54,7 @@ export default function TeacherRegisterPage() {
   const generateReferralCode = () => Math.random().toString(36).substring(2, 10).toUpperCase();
   
   const [referralCode, setReferralCode] = useState(generateReferralCode());
+  const [state, formAction] = useActionState(registerTeacher, undefined);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,13 +89,15 @@ export default function TeacherRegisterPage() {
     toast({ description: "Referral code copied to clipboard!" });
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Registration Successful",
-      description: "Your account has been created. Welcome!",
-    });
-  }
+  useEffect(() => {
+    if (state?.error) {
+      toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: state.error,
+      });
+    }
+  }, [state, toast]);
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">
@@ -97,7 +111,7 @@ export default function TeacherRegisterPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form action={formAction} className="space-y-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -217,9 +231,7 @@ export default function TeacherRegisterPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" size="lg">
-                Create Account
-              </Button>
+              <SubmitButton />
             </form>
           </Form>
         </CardContent>

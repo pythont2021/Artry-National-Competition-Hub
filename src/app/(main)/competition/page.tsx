@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getDashboardLink } from "@/lib/utils";
 import { Award, Palette, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,23 +31,7 @@ export default function CompetitionHome() {
   const authToken = cookies().get('auth-token')?.value;
   const isLoggedIn = !!authToken;
   
-  let dashboardLink = "/login";
-
-  if (authToken) {
-      if (authToken.includes('participant')) {
-          dashboardLink = '/dashboard/participant';
-      } else if (authToken.includes('artist')) {
-          dashboardLink = '/dashboard/artist';
-      } else if (authToken.includes('volunteer')) {
-          dashboardLink = '/dashboard/volunteer';
-      } else if (authToken.includes('jury')) {
-          dashboardLink = '/dashboard/jury';
-      } else if (authToken.includes('vendor')) {
-          dashboardLink = '/dashboard/vendor';
-      } else if (authToken.includes('audience')) {
-          dashboardLink = '/dashboard/audience';
-      }
-  }
+  const dashboardLink = getDashboardLink(authToken);
 
   return (
     <>

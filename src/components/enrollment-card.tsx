@@ -4,7 +4,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Ticket } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { enrollUser } from "@/app/(main)/login/actions";
+import { useFormStatus } from "react-dom";
 
 const fees = {
   junior: 299,
@@ -15,17 +16,18 @@ const fees = {
 
 type UserCategory = 'junior' | 'intermediate' | 'senior' | 'artist';
 
-export function EnrollmentCard({ userCategory }: { userCategory: UserCategory }) {
-  const { toast } = useToast();
-  const fee = fees[userCategory];
+function EnrollButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button size="lg" className="w-full" type="submit" disabled={pending}>
+      {pending ? "Processing..." : "Enroll Now & Pay Fee"}
+    </Button>
+  );
+}
 
-  const handleEnroll = () => {
-    toast({
-      title: "Enrollment Successful (Mock)",
-      description: "In a real app, this would lead to a payment gateway. Please log out and log back in with an enrolled user account (e.g., participant@artry.com) to access the full dashboard.",
-      duration: 10000
-    });
-  };
+export function EnrollmentCard({ userCategory }: { userCategory: UserCategory }) {
+  const fee = fees[userCategory];
+  const formAction = enrollUser.bind(null);
 
   return (
     <Card className="bg-primary/5 border-primary/20 shadow-lg">
@@ -43,11 +45,12 @@ export function EnrollmentCard({ userCategory }: { userCategory: UserCategory })
       <CardContent className="text-center">
         <p className="text-muted-foreground font-body">Your one-time enrollment fee is:</p>
         <p className="font-headline text-5xl font-bold my-4">₹{fee}</p>
-        <Button size="lg" className="w-full" onClick={handleEnroll}>
-          Enroll Now & Pay Fee
-        </Button>
+        <form action={formAction}>
+           <input type="hidden" name="userCategory" value={userCategory === 'junior' || userCategory === 'intermediate' || userCategory === 'senior' ? 'participant' : 'artist'} />
+           <EnrollButton />
+        </form>
         <p className="text-xs text-muted-foreground mt-4">
-            This is a secure one-time payment to enter the current competition level.
+            This is a secure one-time mock payment to enter the current competition level.
         </p>
       </CardContent>
     </Card>

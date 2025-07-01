@@ -1,6 +1,7 @@
 
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { getDashboardLink } from "@/lib/utils";
 import { cookies } from "next/headers";
 
 export const dynamic = 'force-dynamic';
@@ -14,18 +15,20 @@ export default function MainLayout({
   const isLoggedIn = !!authToken;
   let userType: string | undefined = undefined;
   
+  const dashboardLink = getDashboardLink(authToken);
+
   if (authToken) {
-      if (authToken.includes('participant')) {
+      if (dashboardLink.includes('participant')) {
           userType = 'participant';
-      } else if (authToken.includes('artist')) {
+      } else if (dashboardLink.includes('artist')) {
           userType = 'artist';
-      } else if (authToken.includes('volunteer')) {
+      } else if (dashboardLink.includes('volunteer')) {
           userType = 'volunteer';
-      } else if (authToken.includes('jury')) {
+      } else if (dashboardLink.includes('jury')) {
           userType = 'jury';
-      } else if (authToken.includes('vendor')) {
+      } else if (dashboardLink.includes('vendor')) {
           userType = 'vendor';
-      } else if (authToken.includes('audience')) {
+      } else if (dashboardLink.includes('audience')) {
           userType = 'audience';
       }
   }
