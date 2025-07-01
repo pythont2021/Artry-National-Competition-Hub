@@ -1,37 +1,20 @@
 
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { getDashboardLink } from "@/lib/utils";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = 'force-dynamic';
 
-export default function MainLayout({
+export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const authToken = cookies().get('auth-token')?.value;
-  const isLoggedIn = !!authToken;
-  let userType: string | undefined = undefined;
-  
-  const dashboardLink = getDashboardLink(authToken);
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (authToken) {
-      if (dashboardLink.includes('participant')) {
-          userType = 'participant';
-      } else if (dashboardLink.includes('artist')) {
-          userType = 'artist';
-      } else if (dashboardLink.includes('volunteer')) {
-          userType = 'volunteer';
-      } else if (dashboardLink.includes('jury')) {
-          userType = 'jury';
-      } else if (dashboardLink.includes('vendor')) {
-          userType = 'vendor';
-      } else if (dashboardLink.includes('audience')) {
-          userType = 'audience';
-      }
-  }
+  const isLoggedIn = !!user;
+  const userType = user?.user_metadata?.role;
 
   return (
     <div className="flex flex-col min-h-screen">

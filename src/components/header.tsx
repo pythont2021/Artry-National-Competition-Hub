@@ -31,6 +31,7 @@ import { Logo } from "./logo";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/(main)/login/actions";
+import { getDashboardLink } from "@/lib/utils";
 
 const navLinks = [
   { href: "/competition", label: "Home", icon: Sparkles },
@@ -59,29 +60,13 @@ const navLinks = [
   { href: "/competition/about-art", label: "About Art", icon: Info },
   { href: "/competition/gallery", label: "Gallery", icon: LayoutGrid },
   { href: "/competition/vote", label: "Vote", icon: ThumbsUp },
+  { href: "/competition/winners", label: "Winners", icon: Award }
 ];
 
 export function Header({ isLoggedIn, userType }: { isLoggedIn: boolean, userType?: string }) {
   const pathname = usePathname();
 
-  const getDashboardLink = () => {
-    switch(userType) {
-        case 'participant':
-            return '/dashboard/participant';
-        case 'volunteer':
-            return '/dashboard/volunteer';
-        case 'jury':
-            return '/dashboard/jury';
-        case 'vendor':
-            return '/dashboard/vendor';
-        case 'artist':
-            return '/dashboard/artist';
-        case 'audience':
-            return '/dashboard/audience';
-        default:
-            return '/login';
-    }
-  }
+  const dashboardLink = getDashboardLink(userType);
 
   const renderLink = (link: any, isMobile = false) => {
     if (link.subLinks) {
@@ -196,7 +181,7 @@ export function Header({ isLoggedIn, userType }: { isLoggedIn: boolean, userType
           {isLoggedIn ? (
             <>
               <Button asChild>
-                <Link href={getDashboardLink()}>Dashboard</Link>
+                <Link href={dashboardLink}>Dashboard</Link>
               </Button>
               <form action={logout}>
                 <Button type="submit" variant="ghost">

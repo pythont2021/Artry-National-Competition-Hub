@@ -1,19 +1,31 @@
+
 'use server';
 
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 
 export async function registerVendor(prevState: any, formData: FormData) {
-  // In a real app, you would validate the data and save the user to a database.
-  
-  const authToken = 'mock-user-session-token-for-vendor';
+  const supabase = createClient();
 
-  cookies().set('auth-token', authToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60 * 24, // 1 day
-    path: '/',
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+  
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        role: 'vendor',
+        company_name: formData.get('companyName') as string,
+        contact_person: formData.get('contactPerson') as string,
+      }
+    }
   });
 
-  redirect('/dashboard/vendor');
+  if (error) {
+    console.error('Supabase signup error:', error);
+    return { error: error.message };
+  }
+
+  redirect('/login?message=registration-success');
 }

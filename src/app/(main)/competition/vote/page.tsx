@@ -1,19 +1,14 @@
 
 import { VoteClientPage } from "@/components/vote-client-page";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-export default function VotePage() {
-  const authToken = cookies().get('auth-token')?.value;
+export default async function VotePage() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!authToken) {
+  if (!user) {
     redirect('/login?from=/competition/vote');
-  }
-
-  // Logged in, but not enrolled
-  if (!authToken.includes(':enrolled')) {
-     const userType = authToken.includes('artist') ? 'artist' : 'participant';
-     redirect(`/dashboard/${userType}`);
   }
 
   return <VoteClientPage />;

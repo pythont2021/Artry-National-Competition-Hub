@@ -1,28 +1,32 @@
+
 'use server';
 
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 
 export async function registerParticipant(prevState: any, formData: FormData) {
-  const participantCategory = formData.get('participantCategory');
+  const supabase = createClient();
+
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+  const participantCategory = formData.get('participantCategory') as string;
   
-  // In a real app, you would save the user to a DB here.
-  // We'll just set a cookie and redirect.
-
-  let tokenType = 'participant';
-  if (participantCategory === 'artist') {
-    tokenType = 'artist';
-  }
-
-  // All new registrations are unenrolled by default
-  const authToken = `mock-user-session-token-for-${tokenType}:not-enrolled`;
-
-  cookies().set('auth-token', authToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60 * 24, // 1 day
-    path: '/',
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        role: participantCategory === 'artist' ? 'artist' : 'participant',
+        full_name: `${formData.get('firstName')} ${formData.get('lastName')}`,
+        category: participantCategory
+      }
+    }
   });
 
-  redirect(`/dashboard/${tokenType}`);
+  if (error) {
+    console.error('Supabase signup error:', error);
+    return { error: error.message };
+  }
+
+  redirect('/login?message=registration-success');
 }

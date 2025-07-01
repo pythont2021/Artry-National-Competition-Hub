@@ -5,7 +5,7 @@ import { getDashboardLink } from "@/lib/utils";
 import { Award, Palette, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = 'force-dynamic';
 
@@ -27,11 +27,12 @@ const features = [
   },
 ]
 
-export default function CompetitionHome() {
-  const authToken = cookies().get('auth-token')?.value;
-  const isLoggedIn = !!authToken;
-  
-  const dashboardLink = getDashboardLink(authToken);
+export default async function CompetitionHome() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const isLoggedIn = !!user;
+  const dashboardLink = getDashboardLink(user?.user_metadata?.role);
 
   return (
     <>

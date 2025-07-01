@@ -16,7 +16,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogIn } from "lucide-react";
 import { login } from "./actions";
 import { Label } from "@/components/ui/label";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useSearchParams } from "next/navigation";
 
 
@@ -41,11 +40,25 @@ function LoginMessages() {
 
   useEffect(() => {
     const message = searchParams.get('message');
+    const error = searchParams.get('error');
     if (message === 'logout-success') {
       toast({
         title: "Logged Out",
         description: "You have been successfully logged out.",
       });
+    }
+     if (message === 'registration-success') {
+      toast({
+        title: "Registration Successful",
+        description: "Please check your email to verify your account.",
+      });
+    }
+    if(error) {
+        toast({
+            variant: "destructive",
+            title: "Authentication Error",
+            description: "Could not authenticate user. Please try again.",
+        });
     }
   }, [searchParams, toast]);
 
@@ -146,25 +159,6 @@ export default function LoginPage() {
             </p>
           </div>
         </CardContent>
-        <CardFooter>
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="text-sm">View Mock User Credentials</AccordionTrigger>
-                <AccordionContent>
-                  <div className="text-xs text-muted-foreground space-y-2">
-                    <p><b>Enrolled Participant:</b><br/>participant@artry.com / participant123</p>
-                    <p><b>Unenrolled Participant:</b><br/>unenrolled@artry.com / unenrolled123</p>
-                    <p><b>Unenrolled Artist:</b><br/>artist@artry.com / artist123</p>
-                    <p><b>Enrolled Artist:</b><br/>enrolled-artist@artry.com / artist123</p>
-                    <p><b>Audience:</b><br/>audience@artry.com / audience123</p>
-                    <p><b>Volunteer:</b><br/>volunteer@artry.com / volunteer123</p>
-                    <p><b>Jury:</b><br/>jury@artry.com / jury123</p>
-                    <p><b>Vendor:</b><br/>vendor@artry.com / vendor123</p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-        </CardFooter>
       </Card>
     </div>
   );

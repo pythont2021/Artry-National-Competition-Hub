@@ -1,25 +1,31 @@
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ProfileCard } from "@/components/profile-card";
 import { Shield, Briefcase, Mail } from "lucide-react";
 import { JuryRatingPage } from "@/components/jury-rating-page";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = 'force-dynamic';
 
-export default function JuryDashboard() {
-  const authToken = cookies().get('auth-token')?.value;
-  if (!authToken || !authToken.includes('jury')) {
+export default async function JuryDashboard() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
     redirect('/login?from=/dashboard/jury');
   }
 
-  const user = {
-    name: "Rohan Mehra",
-    avatarUrl: `https://i.pravatar.cc/150?u=Rohan%20Mehra`,
+  if (user.user_metadata.role !== 'jury') {
+    redirect('/login');
+  }
+
+  const profile = {
+    name: user.user_metadata.full_name || "Jury Member",
+    avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Jury Profile",
     details: [
-        { icon: <Briefcase className="h-4 w-4" />, label: "Art Critic" },
-        { icon: <Mail className="h-4 w-4" />, label: "rohan.mehra@example.com" },
+        { icon: <Briefcase className="h-4 w-4" />, label: user.user_metadata.profession || "Art Expert" },
+        { icon: <Mail className="h-4 w-4" />, label: user.email! },
     ]
   }
 
@@ -28,10 +34,10 @@ export default function JuryDashboard() {
         <div className="flex flex-col lg:flex-row gap-8">
             <aside className="w-full lg:w-1/3 xl:w-1/4">
                  <ProfileCard 
-                    name={user.name}
-                    avatarUrl={user.avatarUrl}
-                    description={user.description}
-                    details={user.details}
+                    name={profile.name}
+                    avatarUrl={profile.avatarUrl}
+                    description={profile.description}
+                    details={profile.details}
                 />
             </aside>
             <main className="w-full lg:w-2/3 xl:w-3/4">
