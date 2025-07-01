@@ -21,6 +21,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Copy, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { registerTeacher } from "./actions";
 
 const formSchema = z.object({
@@ -41,6 +42,7 @@ const formSchema = z.object({
 
 export default function TeacherRegisterPage() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const generateReferralCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
   
@@ -73,9 +75,11 @@ export default function TeacherRegisterPage() {
   const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
-        if (value) {
-          formData.append(key, value);
-        }
+      if (typeof value === 'boolean') {
+        formData.append(key, value.toString());
+      } else if (value) {
+        formData.append(key, value);
+      }
     });
     
     const result = await registerTeacher(formData);
@@ -86,6 +90,12 @@ export default function TeacherRegisterPage() {
         title: "Registration Failed",
         description: result.error,
       });
+    } else if (result?.success) {
+      toast({
+        title: "Registration Successful",
+        description: "Please check your email to verify your account.",
+      });
+      router.push('/login?message=registration-success');
     }
   };
 

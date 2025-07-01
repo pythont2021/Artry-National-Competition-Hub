@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -40,6 +41,7 @@ const formSchema = z.object({
 
 export default function JuryRegisterPage() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,9 +61,11 @@ export default function JuryRegisterPage() {
   const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
-        if (value) {
-          formData.append(key, value);
-        }
+      if (typeof value === 'boolean') {
+        formData.append(key, value.toString());
+      } else if (value) {
+        formData.append(key, value);
+      }
     });
 
     const result = await registerJury(formData);
@@ -72,6 +76,12 @@ export default function JuryRegisterPage() {
         title: "Registration Failed",
         description: result.error,
       });
+    } else if (result?.success) {
+      toast({
+        title: "Registration Successful",
+        description: "Please check your email to verify your account.",
+      });
+      router.push('/login?message=registration-success');
     }
   };
 

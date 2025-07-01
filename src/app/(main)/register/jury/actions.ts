@@ -1,7 +1,6 @@
 
 'use server';
 
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
 export async function registerJury(formData: FormData) {
@@ -10,7 +9,7 @@ export async function registerJury(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
-  const { data, error } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -28,6 +27,5 @@ export async function registerJury(formData: FormData) {
     return { error: error.message };
   }
 
-  // Supabase sends a confirmation email.
-  redirect('/login?message=registration-success');
+  return { success: true };
 }

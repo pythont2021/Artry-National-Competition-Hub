@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { registerVendor } from "./actions";
 
 const formSchema = z.object({
@@ -42,6 +43,7 @@ const formSchema = z.object({
 
 export default function VendorRegisterPage() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,7 +64,9 @@ export default function VendorRegisterPage() {
   const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
-      if (value) {
+      if (typeof value === 'boolean') {
+        formData.append(key, value.toString());
+      } else if (value) {
         formData.append(key, value);
       }
     });
@@ -75,6 +79,12 @@ export default function VendorRegisterPage() {
         title: "Registration Failed",
         description: result.error,
       });
+    } else if (result?.success) {
+      toast({
+        title: "Registration Successful",
+        description: "Please check your email to verify your account.",
+      });
+      router.push('/login?message=registration-success');
     }
   };
 

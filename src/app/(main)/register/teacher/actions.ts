@@ -1,7 +1,6 @@
 
 'use server';
 
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
 export async function registerTeacher(formData: FormData) {
@@ -28,5 +27,5 @@ export async function registerTeacher(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect('/login?message=registration-success');
+  return { success: true };
 }

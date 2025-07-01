@@ -1,7 +1,6 @@
 
 'use server';
 
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
 export async function registerParticipant(formData: FormData) {
@@ -14,8 +13,7 @@ export async function registerParticipant(formData: FormData) {
   const dobValue = formData.get('dob') as string;
   const ageGroup = formData.get('ageGroup') as string;
 
-  // Format date correctly for DB
-  const dobForDb = dobValue ? new Date(dobValue).toISOString().split('T')[0] : null;
+  const dobForDb = dobValue ? new Date(dobValue).toISOString() : null;
 
   const userData = {
       role: participantCategory === 'artist' ? 'artist' : 'participant',
@@ -30,6 +28,7 @@ export async function registerParticipant(formData: FormData) {
       grade: formData.get('grade') as string,
       address: formData.get('address') as string,
       alt_contact: formData.get('altContact') as string,
+      avatar_url: null as string | null,
   };
 
   // 1. Sign up the user
@@ -56,12 +55,12 @@ export async function registerParticipant(formData: FormData) {
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, profilePhoto, {
-            upsert: true, // Overwrite if file exists
+            upsert: true,
         });
 
       if (uploadError) {
           console.error("Error uploading avatar:", uploadError);
-          // Non-critical error, so we don't block registration
+          // Non-critical, but good to be aware of.
       } else {
           // 3. Get public URL and update profile
           const { data: urlData } = supabase.storage
@@ -81,10 +80,6 @@ export async function registerParticipant(formData: FormData) {
       }
   }
 
-  // 4. Redirect based on role
-  if (participantCategory === 'junior' || participantCategory === 'intermediate' || participantCategory === 'senior') {
-    redirect('/dashboard/audience');
-  } else {
-    redirect(`/dashboard/${userData.role}`);
-  }
+  // 4. Return success
+  return { success: true, role: userData.role };
 }
