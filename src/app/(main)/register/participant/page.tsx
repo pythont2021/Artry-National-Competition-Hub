@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { format, differenceInYears } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, GraduationCap, Upload, Image as ImageIcon, XCircle, Info } from "lucide-react";
+import { Calendar as CalendarIcon, GraduationCap, Upload, Image as ImageIcon, Info } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -31,6 +31,9 @@ import Image from "next/image";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { registerParticipant } from "./actions";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const boards = [
   {
@@ -84,7 +87,6 @@ const boards = [
   },
 ];
 
-
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
   lastName: z.string().min(1, { message: "Last name is required." }),
@@ -101,9 +103,13 @@ const formSchema = z.object({
   address: z.string().min(10, { message: "Address must be at least 10 characters." }),
   altContact: z.string().regex(/^\d{10}$/, { message: "Please enter a valid 10-digit mobile number." }).optional().or(z.literal('')),
   referralCode: z.string().optional(),
-  profilePhoto: z.any().refine((file) => file, {
-    message: "Profile photo is required.",
-  }),
+  profilePhoto: z.any()
+    .refine((files) => files?.length === 1, "Profile photo is required.")
+    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+    .refine(
+      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    ),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string(),
   terms: z.boolean().refine((val) => val === true, {
@@ -131,7 +137,6 @@ const formSchema = z.object({
 
 export default function ParticipantRegisterPage() {
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
   const [showCategoryChoice, setShowCategoryChoice] = useState(false);
   
@@ -159,17 +164,17 @@ export default function ParticipantRegisterPage() {
   
   const { isSubmitting } = form.formState;
 
-  const handleFormSubmit = async (data: z.infer<typeof formSchema>) => {
+  const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
     const formData = new FormData();
-    Object.keys(data).forEach(key => {
-        const value = data[key as keyof typeof data];
-        if (value instanceof Date) {
-            formData.append(key, value.toISOString());
-        } else if (value instanceof File) {
-            formData.append(key, value);
-        } else if (value !== null && value !== undefined) {
-            formData.append(key, String(value));
-        }
+    
+    Object.entries(values).forEach(([key, value]) => {
+      if (key === 'profilePhoto' && value instanceof FileList) {
+        formData.append(key, value[0]);
+      } else if (value instanceof Date) {
+        formData.append(key, value.toISOString());
+      } else if (value !== null && value !== undefined) {
+        formData.append(key, String(value));
+      }
     });
     
     const result = await registerParticipant(formData);
@@ -190,7 +195,6 @@ export default function ParticipantRegisterPage() {
     if (dob) {
       const calculatedAge = differenceInYears(new Date(), dob);
       let group = "";
-      // Reset category choice on DOB change
       setShowCategoryChoice(false);
       form.setValue("participantCategory", undefined);
       form.clearErrors("participantCategory");
@@ -221,12 +225,13 @@ export default function ParticipantRegisterPage() {
   }, [dob, form]);
 
   useEffect(() => {
-      if (photo && photo instanceof File) {
+      if (photo && photo.length > 0) {
+        const file = photo[0];
         const reader = new FileReader();
         reader.onloadend = () => {
           setProfilePhotoPreview(reader.result as string);
         };
-        reader.readAsDataURL(photo);
+        reader.readAsDataURL(file);
       } else {
         setProfilePhotoPreview(null);
       }
@@ -285,7 +290,7 @@ export default function ParticipantRegisterPage() {
                         <Input placeholder="name@example.com" {...field} />
                       </FormControl>
                       <FormDescription>
-                        Your email will be used for login and communication. For participants under 18, please use a parent's email.
+                        For participants under 18, please use a parent's email.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -530,7 +535,7 @@ export default function ParticipantRegisterPage() {
               <FormField
                 control={form.control}
                 name="profilePhoto"
-                render={({ field: { onChange, value, ...rest }}) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Profile Photo</FormLabel>
                     <div className="flex items-center gap-4">
@@ -557,30 +562,17 @@ export default function ParticipantRegisterPage() {
                                       )}
                                   </div>
                                   <FormControl>
-                                    <Input 
-                                      type="file" 
-                                      accept="image/*" 
-                                      className="hidden"
-                                      ref={fileInputRef}
-                                      {...rest}
-                                      onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) {
-                                            if (!file.type.startsWith('image/')) {
-                                                toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please upload an image file.'});
-                                                return;
-                                            }
-                                            onChange(file);
-                                        }
-                                      }} />
+                                    <Input
+                                        type="file"
+                                        accept="image/*"
+                                        className="sr-only"
+                                        name={field.name}
+                                        ref={field.ref}
+                                        onBlur={field.onBlur}
+                                        onChange={(e) => field.onChange(e.target.files)}
+                                    />
                                   </FormControl>
-                                  <Button type="button" onClick={() => fileInputRef.current?.click()}>Choose File</Button>
-                                  <Alert variant="destructive" className="hidden" data-ai-hint="blurry image warning">
-                                      <AlertTitle>Image Quality Low</AlertTitle>
-                                      <AlertDescription>
-                                          This image appears to be blurry. Please upload a clearer photo.
-                                      </AlertDescription>
-                                  </Alert>
+                                  <Button type="button" onClick={() => (document.querySelector('input[name="profilePhoto"]') as HTMLInputElement)?.click()}>Choose File</Button>
                               </div>
                                <Alert>
                                 <Info className="h-4 w-4" />
@@ -597,24 +589,10 @@ export default function ParticipantRegisterPage() {
                           </DialogContent>
                       </Dialog>
 
-                      {profilePhotoPreview && value && (
+                      {profilePhotoPreview && (
                           <div className="flex items-center gap-2">
                               <Image src={profilePhotoPreview} alt="Profile thumbnail" width={40} height={40} className="rounded-full object-cover" />
-                              <span className="text-sm text-muted-foreground truncate max-w-xs">{value?.name}</span>
-                              <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-6 w-6"
-                                  onClick={() => {
-                                      onChange(null);
-                                      if (fileInputRef.current) {
-                                        fileInputRef.current.value = "";
-                                      }
-                                      setProfilePhotoPreview(null);
-                                  }}>
-                                    <XCircle className="h-4 w-4" />
-                              </Button>
+                              <span className="text-sm text-muted-foreground truncate max-w-xs">{photo?.[0]?.name}</span>
                           </div>
                       )}
                     </div>

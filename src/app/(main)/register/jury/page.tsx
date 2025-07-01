@@ -56,12 +56,11 @@ export default function JuryRegisterPage() {
 
   const { isSubmitting } = form.formState;
 
-  const handleFormSubmit = async (data: z.infer<typeof formSchema>) => {
+  const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
     const formData = new FormData();
-    Object.keys(data).forEach(key => {
-        const value = data[key as keyof typeof data];
-        if (value !== null && value !== undefined) {
-          formData.append(key, String(value));
+    Object.entries(values).forEach(([key, value]) => {
+        if (value) {
+          formData.append(key, value);
         }
     });
 
