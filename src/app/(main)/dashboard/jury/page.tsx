@@ -4,6 +4,7 @@ import { ProfileCard } from "@/components/profile-card";
 import { Shield, Briefcase, Mail } from "lucide-react";
 import { JuryRatingPage } from "@/components/jury-rating-page";
 import { createClient } from "@/lib/supabase/server";
+import { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export default async function JuryDashboard() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .single<Profile>();
     
   if (!profile || profile.role !== 'jury') {
     redirect('/login');
@@ -31,7 +32,7 @@ export default async function JuryDashboard() {
 
   const profileData = {
     name: profile.full_name || "Jury Member",
-    avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
+    avatarUrl: profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Jury Profile",
     details: [
         { icon: <Briefcase className="h-4 w-4" />, label: profile.profession || "Art Expert" },

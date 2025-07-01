@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, User, Ticket, GalleryHorizontal, Hand } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -21,10 +22,10 @@ export default async function AudienceDashboard() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .single<Profile>();
   
   // If user has no specific role, they are audience. If profile doesnt exist, they are also treated as audience.
-  const isAudience = !profile || profile.role === 'audience';
+  const isAudience = !profile || profile.role === 'audience' || profile.role === 'participant';
 
   if (!isAudience) {
      redirect('/login');
@@ -32,7 +33,7 @@ export default async function AudienceDashboard() {
 
   const profileData = {
     name: profile?.full_name || "Art Enthusiast",
-    avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
+    avatarUrl: profile?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Art Enthusiast",
     details: [
         { icon: <User className="h-4 w-4" />, label: "Audience Profile" },

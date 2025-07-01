@@ -9,6 +9,15 @@ export type Profile = {
   contact_person: string | null;
   referral_code: string | null;
   created_at: string | null;
+  mobile: string | null;
+  dob: string | null; // Date as string
+  board: string | null;
+  school: string | null;
+  grade: string | null;
+  address: string | null;
+  alt_contact: string | null;
+  avatar_url: string | null;
+  services_offered: string | null;
 };
 
 export type Artwork = {

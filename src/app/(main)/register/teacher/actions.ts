@@ -18,6 +18,7 @@ export async function registerTeacher(prevState: any, formData: FormData) {
         role: 'volunteer',
         full_name: formData.get('name') as string,
         referral_code: formData.get('referralCode') as string,
+        mobile: formData.get('mobile') as string,
       }
     }
   });

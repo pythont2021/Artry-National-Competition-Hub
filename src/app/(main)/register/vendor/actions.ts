@@ -18,6 +18,8 @@ export async function registerVendor(prevState: any, formData: FormData) {
         role: 'vendor',
         company_name: formData.get('companyName') as string,
         contact_person: formData.get('contactPerson') as string,
+        mobile: formData.get('mobile') as string,
+        services_offered: formData.get('services') as string,
       }
     }
   });

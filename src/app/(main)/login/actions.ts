@@ -22,7 +22,13 @@ export async function login(prevState: any, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   const role = user?.user_metadata?.role || 'audience';
 
-  if (role === 'participant' || role === 'artist' || role === 'volunteer' || role === 'jury' || role === 'vendor' || role === 'audience') {
+  // Special case for new participants. They need to enroll.
+  // For now, we redirect them to the audience dashboard.
+  if (role === 'participant') {
+    redirect('/dashboard/audience');
+  }
+
+  if (role === 'artist' || role === 'volunteer' || role === 'jury' || role === 'vendor' || role === 'audience') {
     redirect(`/dashboard/${role}`);
   }
 

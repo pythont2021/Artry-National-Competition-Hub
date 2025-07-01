@@ -8,6 +8,7 @@ import { AchievementsSection } from "@/components/achievements-section";
 import { MotivationalMessage } from "@/components/motivational-message";
 import { GraduationCap, School, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ export default async function ParticipantDashboard() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .single<Profile>();
 
   if (!profile || profile.role !== 'participant') {
     redirect('/login');
@@ -38,12 +39,12 @@ export default async function ParticipantDashboard() {
 
   const participant = {
     name: profile.full_name || "Participant",
-    avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
+    avatarUrl: profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Enrolled Participant",
     details: [
         { icon: <User className="h-4 w-4" />, label: profile.category || "Participant" },
-        { icon: <GraduationCap className="h-4 w-4" />, label: "B.F.A. 2nd Year" },
-        { icon: <School className="h-4 w-4" />, label: "National Institute of Design" }
+        { icon: <GraduationCap className="h-4 w-4" />, label: profile.grade || "Not specified" },
+        { icon: <School className="h-4 w-4" />, label: profile.school || "Not specified" }
     ]
   }
 

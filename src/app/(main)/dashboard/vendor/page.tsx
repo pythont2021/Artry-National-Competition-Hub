@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Building, Mail, Phone, Eye } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +22,7 @@ export default async function VendorDashboard() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .single<Profile>();
 
   if (!profile || profile.role !== 'vendor') {
     redirect('/login');
@@ -29,12 +30,12 @@ export default async function VendorDashboard() {
 
   const profileData = {
     name: profile.contact_person || "Vendor",
-    avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
+    avatarUrl: profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: profile.company_name || "Creative Supplies Inc.",
     details: [
         { icon: <Building className="h-4 w-4" />, label: "Vendor Profile" },
         { icon: <Mail className="h-4 w-4" />, label: user.email! },
-        { icon: <Phone className="h-4 w-4" />, label: "+91 9876543210" },
+        { icon: <Phone className="h-4 w-4" />, label: profile.mobile || "Not provided" },
     ]
   }
 

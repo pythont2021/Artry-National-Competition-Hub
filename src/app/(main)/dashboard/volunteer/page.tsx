@@ -5,6 +5,7 @@ import { ProfileCard } from "@/components/profile-card";
 import { Briefcase, Mail, Star } from "lucide-react";
 import { ReferredParticipantsList } from "@/components/referred-participants-list";
 import { createClient } from "@/lib/supabase/server";
+import { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -20,13 +21,12 @@ export default async function VolunteerDashboard() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .single<Profile>();
 
   if (!profile || profile.role !== 'volunteer') {
     redirect('/login');
   }
   
-  // In a real app, this data would come from a database
   const { data: referredParticipants, error: referredError } = await supabase
     .from('profiles')
     .select('full_name, category')
@@ -34,7 +34,7 @@ export default async function VolunteerDashboard() {
 
   const profileData = {
     name: profile.full_name || "Volunteer",
-    avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
+    avatarUrl: profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Volunteer Profile",
     details: [
         { icon: <Briefcase className="h-4 w-4" />, label: "Art Teacher" },
