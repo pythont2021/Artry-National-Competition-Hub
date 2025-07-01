@@ -1,3 +1,4 @@
+
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -10,11 +11,18 @@ export function getDashboardLink(userType?: string) {
     return "/login";
   }
 
-  const validRoles = ['participant', 'artist', 'volunteer', 'jury', 'vendor', 'audience'];
+  // Special case for new participants. They need to enroll.
+  // Redirect them to the audience dashboard for now.
+  if (userType === 'participant') {
+    return '/dashboard/audience';
+  }
+
+  const validRoles = ['artist', 'volunteer', 'jury', 'vendor', 'audience'];
 
   if (validRoles.includes(userType)) {
       return `/dashboard/${userType}`;
   }
 
+  // Fallback for any other case
   return "/login";
 }

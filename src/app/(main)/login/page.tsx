@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogIn } from "lucide-react";
 import { login } from "./actions";
 import { Label } from "@/components/ui/label";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 
 const otpFormSchema = z.object({
@@ -67,6 +67,7 @@ function LoginMessages() {
 
 export default function LoginPage() {
   const { toast } = useToast();
+  const router = useRouter();
   
   const [state, formAction] = useActionState(login, undefined);
 
@@ -85,7 +86,14 @@ export default function LoginPage() {
         description: state.error,
       });
     }
-  }, [state, toast]);
+    if (state?.success && state.redirectTo) {
+      toast({
+        title: "Login Successful",
+        description: "Redirecting to your dashboard...",
+      });
+      router.push(state.redirectTo);
+    }
+  }, [state, toast, router]);
   
   function onOtpSubmit(values: z.infer<typeof otpFormSchema>) {
     console.log("OTP login:", values);
