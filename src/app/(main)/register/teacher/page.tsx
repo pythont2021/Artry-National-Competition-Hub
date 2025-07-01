@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Copy, RefreshCw } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { registerTeacher } from "./actions";
 
 const formSchema = z.object({
@@ -42,7 +42,7 @@ const formSchema = z.object({
 export default function TeacherRegisterPage() {
   const { toast } = useToast();
 
-  const generateReferralCode = () => Math.random().toString(36).substring(2, 10).toUpperCase();
+  const generateReferralCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
   
   const [referralCode, setReferralCode] = useState(generateReferralCode());
   
@@ -72,16 +72,12 @@ export default function TeacherRegisterPage() {
 
   const handleFormSubmit = async (data: z.infer<typeof formSchema>) => {
     const formData = new FormData();
-    for (const key in data) {
-      const value = data[key as keyof typeof data];
-      if (value !== null && value !== undefined) {
-         if (typeof value === 'boolean') {
-          formData.append(key, value ? 'true' : 'false');
-        } else {
+    Object.keys(data).forEach(key => {
+        const value = data[key as keyof typeof data];
+        if (value !== null && value !== undefined) {
           formData.append(key, String(value));
         }
-      }
-    }
+    });
     
     const result = await registerTeacher(formData);
 

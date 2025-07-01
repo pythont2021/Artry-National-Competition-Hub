@@ -161,20 +161,16 @@ export default function ParticipantRegisterPage() {
 
   const handleFormSubmit = async (data: z.infer<typeof formSchema>) => {
     const formData = new FormData();
-    for (const key in data) {
-      const value = data[key as keyof typeof data];
-      if (value !== null && value !== undefined) {
+    Object.keys(data).forEach(key => {
+        const value = data[key as keyof typeof data];
         if (value instanceof Date) {
-          formData.append(key, value.toISOString());
+            formData.append(key, value.toISOString());
         } else if (value instanceof File) {
-          formData.append(key, value);
-        } else if (typeof value === 'boolean') {
-          formData.append(key, value ? 'true' : 'false');
-        } else {
-          formData.append(key, String(value));
+            formData.append(key, value);
+        } else if (value !== null && value !== undefined) {
+            formData.append(key, String(value));
         }
-      }
-    }
+    });
     
     const result = await registerParticipant(formData);
 
@@ -225,7 +221,7 @@ export default function ParticipantRegisterPage() {
   }, [dob, form]);
 
   useEffect(() => {
-      if (photo && photo.name) {
+      if (photo && photo instanceof File) {
         const reader = new FileReader();
         reader.onloadend = () => {
           setProfilePhotoPreview(reader.result as string);
@@ -534,7 +530,7 @@ export default function ParticipantRegisterPage() {
               <FormField
                 control={form.control}
                 name="profilePhoto"
-                render={({ field }) => (
+                render={({ field: { onChange, value, ...rest }}) => (
                   <FormItem>
                     <FormLabel>Profile Photo</FormLabel>
                     <div className="flex items-center gap-4">
@@ -566,6 +562,7 @@ export default function ParticipantRegisterPage() {
                                       accept="image/*" 
                                       className="hidden"
                                       ref={fileInputRef}
+                                      {...rest}
                                       onChange={(e) => {
                                         const file = e.target.files?.[0];
                                         if (file) {
@@ -573,7 +570,7 @@ export default function ParticipantRegisterPage() {
                                                 toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please upload an image file.'});
                                                 return;
                                             }
-                                            field.onChange(file);
+                                            onChange(file);
                                         }
                                       }} />
                                   </FormControl>
@@ -600,18 +597,17 @@ export default function ParticipantRegisterPage() {
                           </DialogContent>
                       </Dialog>
 
-                      {profilePhotoPreview && (
+                      {profilePhotoPreview && value && (
                           <div className="flex items-center gap-2">
                               <Image src={profilePhotoPreview} alt="Profile thumbnail" width={40} height={40} className="rounded-full object-cover" />
-                              <span className="text-sm text-muted-foreground truncate max-w-xs">{photo?.name}</span>
-
+                              <span className="text-sm text-muted-foreground truncate max-w-xs">{value?.name}</span>
                               <Button
                                   type="button"
                                   variant="ghost"
                                   size="icon"
                                   className="h-6 w-6"
                                   onClick={() => {
-                                      field.onChange(null);
+                                      onChange(null);
                                       if (fileInputRef.current) {
                                         fileInputRef.current.value = "";
                                       }

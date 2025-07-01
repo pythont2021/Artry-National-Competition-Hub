@@ -58,16 +58,12 @@ export default function JuryRegisterPage() {
 
   const handleFormSubmit = async (data: z.infer<typeof formSchema>) => {
     const formData = new FormData();
-    for (const key in data) {
-      const value = data[key as keyof typeof data];
-      if (value !== null && value !== undefined) {
-         if (typeof value === 'boolean') {
-          formData.append(key, value ? 'true' : 'false');
-        } else {
+    Object.keys(data).forEach(key => {
+        const value = data[key as keyof typeof data];
+        if (value !== null && value !== undefined) {
           formData.append(key, String(value));
         }
-      }
-    }
+    });
 
     const result = await registerJury(formData);
 
