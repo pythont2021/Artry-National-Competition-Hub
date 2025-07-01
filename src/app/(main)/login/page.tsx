@@ -103,7 +103,6 @@ export default function LoginPage() {
           description: "Redirecting to your dashboard...",
         });
         router.push(result.redirectTo);
-        router.refresh();
       }
     });
   };
