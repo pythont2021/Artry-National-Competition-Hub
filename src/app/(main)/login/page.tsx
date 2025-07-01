@@ -88,12 +88,8 @@ export default function LoginPage() {
   });
   
   const handleLoginSubmit = (values: z.infer<typeof loginFormSchema>) => {
-    const formData = new FormData();
-    formData.append('email', values.email);
-    formData.append('password', values.password);
-
     startTransition(async () => {
-      const result = await login(formData);
+      const result = await login(values);
 
       if (result?.error) {
         toast({

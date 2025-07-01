@@ -11,13 +11,8 @@ const loginFormSchema = z.object({
   password: z.string().min(1, { message: "Password is required." }),
 });
 
-export async function login(formData: FormData) {
+export async function login(data: z.infer<typeof loginFormSchema>) {
   try {
-    const data = {
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-    };
-    
     const { email, password } = loginFormSchema.parse(data);
 
     const supabase = createClient();
