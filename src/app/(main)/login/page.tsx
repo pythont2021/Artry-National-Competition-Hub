@@ -1,22 +1,22 @@
 
 "use client";
 
-import { useEffect, useActionState, Suspense } from "react";
-import { useFormStatus } from "react-dom";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
 import { LogIn } from "lucide-react";
 import { login } from "./actions";
-import { Label } from "@/components/ui/label";
-import { useSearchParams, useRouter } from "next/navigation";
 
 
 const otpFormSchema = z.object({
@@ -25,11 +25,10 @@ const otpFormSchema = z.object({
   }),
 });
 
-function LoginButton() {
-  const { pending } = useFormStatus();
+function LoginButton({ isPending }: { isPending: boolean }) {
   return (
-    <Button type="submit" className="w-full" size="lg" disabled={pending}>
-      {pending ? 'Logging in...' : 'Login with Password'}
+    <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+      {isPending ? 'Logging in...' : 'Login with Password'}
     </Button>
   );
 }
@@ -68,8 +67,7 @@ function LoginMessages() {
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
-  
-  const [state, formAction] = useActionState(login, undefined);
+  const [isPending, setIsPending] = useState(false);
 
   const otpForm = useForm<z.infer<typeof otpFormSchema>>({
     resolver: zodResolver(otpFormSchema),
@@ -77,24 +75,31 @@ export default function LoginPage() {
       mobile: "",
     },
   });
+  
+  const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsPending(true);
 
-  useEffect(() => {
-    if (state?.error) {
+    const formData = new FormData(event.currentTarget);
+    const result = await login(null, formData);
+
+    setIsPending(false);
+
+    if (result?.error) {
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: state.error,
+        description: result.error,
       });
-    }
-    if (state?.success && state.redirectTo) {
+    } else if (result?.success && result.redirectTo) {
       toast({
         title: "Login Successful",
         description: "Redirecting to your dashboard...",
       });
-      router.push(state.redirectTo);
+      router.push(result.redirectTo);
     }
-  }, [state, toast, router]);
-  
+  };
+
   function onOtpSubmit(values: z.infer<typeof otpFormSchema>) {
     console.log("OTP login:", values);
     toast({
@@ -123,7 +128,7 @@ export default function LoginPage() {
               <TabsTrigger value="otp">OTP</TabsTrigger>
             </TabsList>
             <TabsContent value="password">
-              <form action={formAction} className="space-y-6 pt-4">
+              <form onSubmit={handleLoginSubmit} className="space-y-6 pt-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" name="email" placeholder="name@example.com" type="email" required />
@@ -132,7 +137,7 @@ export default function LoginPage() {
                   <Label htmlFor="password">Password</Label>
                   <Input id="password" name="password" placeholder="••••••••" type="password" required />
                 </div>
-                <LoginButton />
+                <LoginButton isPending={isPending} />
               </form>
             </TabsContent>
             <TabsContent value="otp">
