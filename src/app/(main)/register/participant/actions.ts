@@ -12,28 +12,32 @@ export async function registerParticipant(prevState: any, formData: FormData) {
   const participantCategory = formData.get('participantCategory') as string;
   const profilePhoto = formData.get('profilePhoto') as File;
   const dobValue = formData.get('dob') as string;
+  const ageGroup = formData.get('ageGroup') as string;
 
   // Format date correctly for DB
   const dobForDb = dobValue ? new Date(dobValue).toISOString().split('T')[0] : null;
 
-  // 1. Sign up the user with all text-based metadata
+  const userData = {
+      role: participantCategory === 'artist' ? 'artist' : 'participant',
+      full_name: `${formData.get('firstName')} ${formData.get('lastName')}`,
+      category: participantCategory,
+      age_group: ageGroup,
+      referral_code: formData.get('referralCode') as string,
+      mobile: formData.get('mobile') as string,
+      dob: dobForDb,
+      board: formData.get('board') as string,
+      school: formData.get('school') as string,
+      grade: formData.get('grade') as string,
+      address: formData.get('address') as string,
+      alt_contact: formData.get('altContact') as string,
+  };
+
+  // 1. Sign up the user
   const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: {
-        role: participantCategory === 'artist' ? 'artist' : 'participant',
-        full_name: `${formData.get('firstName')} ${formData.get('lastName')}`,
-        category: participantCategory,
-        referral_code: formData.get('referralCode') as string,
-        mobile: formData.get('mobile') as string,
-        dob: dobForDb,
-        board: formData.get('board') as string,
-        school: formData.get('school') as string,
-        grade: formData.get('grade') as string,
-        address: formData.get('address') as string,
-        alt_contact: formData.get('altContact') as string,
-      }
+      data: userData
     }
   });
 
@@ -77,6 +81,10 @@ export async function registerParticipant(prevState: any, formData: FormData) {
       }
   }
 
-  // 4. Redirect to login
-  redirect('/login?message=registration-success');
+  // 4. Redirect based on role
+  if (participantCategory === 'junior' || participantCategory === 'intermediate' || participantCategory === 'senior') {
+    redirect('/dashboard/audience');
+  } else {
+    redirect(`/dashboard/${userData.role}`);
+  }
 }

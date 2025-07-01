@@ -6,7 +6,7 @@ import { UpcomingEventsAlert } from "@/components/upcoming-events-alert";
 import { ArtSubmissions } from "@/components/art-submissions";
 import { AchievementsSection } from "@/components/achievements-section";
 import { MotivationalMessage } from "@/components/motivational-message";
-import { GraduationCap, School, User } from "lucide-react";
+import { GraduationCap, School, User, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Profile } from "@/lib/database.types";
 
@@ -43,6 +43,7 @@ export default async function ParticipantDashboard() {
     description: "Enrolled Participant",
     details: [
         { icon: <User className="h-4 w-4" />, label: profile.category || "Participant" },
+        { icon: <Users className="h-4 w-4" />, label: profile.age_group || "Age not specified" },
         { icon: <GraduationCap className="h-4 w-4" />, label: profile.grade || "Not specified" },
         { icon: <School className="h-4 w-4" />, label: profile.school || "Not specified" }
     ]

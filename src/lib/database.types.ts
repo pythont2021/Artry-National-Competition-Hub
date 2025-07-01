@@ -18,6 +18,7 @@ export type Profile = {
   alt_contact: string | null;
   avatar_url: string | null;
   services_offered: string | null;
+  age_group: string | null;
 };
 
 export type Artwork = {
