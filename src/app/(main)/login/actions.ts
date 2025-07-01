@@ -4,13 +4,18 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getDashboardLink } from '@/lib/utils';
+import * as z from 'zod';
 
-export async function login(formData: FormData) {
+const loginFormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email." }),
+  password: z.string().min(1, { message: "Password is required." }),
+});
+
+export async function login(data: unknown) {
   try {
-    const supabase = createClient();
+    const { email, password } = loginFormSchema.parse(data);
 
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    const supabase = createClient();
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -30,6 +35,9 @@ export async function login(formData: FormData) {
 
   } catch (e: any) {
     console.error('Login action error:', e);
+    if (e instanceof z.ZodError) {
+      return { error: "Invalid email or password format." };
+    }
     return { error: 'An unexpected server error occurred.' };
   }
 }

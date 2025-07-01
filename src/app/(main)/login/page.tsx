@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
@@ -14,10 +14,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
 import { LogIn } from "lucide-react";
 import { login } from "./actions";
 
+const loginFormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email." }),
+  password: z.string().min(1, { message: "Password cannot be empty." }),
+});
 
 const otpFormSchema = z.object({
   mobile: z.string().regex(/^\d{10}$/, {
@@ -67,7 +70,15 @@ function LoginMessages() {
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
-  const [isPending, setIsPending] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const loginForm = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   const otpForm = useForm<z.infer<typeof otpFormSchema>>({
     resolver: zodResolver(otpFormSchema),
@@ -76,28 +87,25 @@ export default function LoginPage() {
     },
   });
   
-  const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsPending(true);
+  const handleLoginSubmit = (values: z.infer<typeof loginFormSchema>) => {
+    startTransition(async () => {
+      const result = await login(values);
 
-    const formData = new FormData(event.currentTarget);
-    const result = await login(formData);
-
-    setIsPending(false);
-
-    if (result?.error) {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: result.error,
-      });
-    } else if (result?.success && result.redirectTo) {
-      toast({
-        title: "Login Successful",
-        description: "Redirecting to your dashboard...",
-      });
-      router.push(result.redirectTo);
-    }
+      if (result?.error) {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: result.error,
+        });
+      } else if (result?.success && result.redirectTo) {
+        toast({
+          title: "Login Successful",
+          description: "Redirecting to your dashboard...",
+        });
+        router.push(result.redirectTo);
+        router.refresh();
+      }
+    });
   };
 
   function onOtpSubmit(values: z.infer<typeof otpFormSchema>) {
@@ -128,17 +136,37 @@ export default function LoginPage() {
               <TabsTrigger value="otp">OTP</TabsTrigger>
             </TabsList>
             <TabsContent value="password">
-              <form onSubmit={handleLoginSubmit} className="space-y-6 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" placeholder="name@example.com" type="email" required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input id="password" name="password" placeholder="••••••••" type="password" required />
-                </div>
-                <LoginButton isPending={isPending} />
-              </form>
+               <Form {...loginForm}>
+                <form onSubmit={loginForm.handleSubmit(handleLoginSubmit)} className="space-y-6 pt-4">
+                   <FormField
+                    control={loginForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="name@example.com" type="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={loginForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input placeholder="••••••••" type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <LoginButton isPending={isPending} />
+                </form>
+              </Form>
             </TabsContent>
             <TabsContent value="otp">
                <Form {...otpForm}>
