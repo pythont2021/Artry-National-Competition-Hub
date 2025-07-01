@@ -18,7 +18,8 @@ export async function registerParticipant(prevState: any, formData: FormData) {
       data: {
         role: participantCategory === 'artist' ? 'artist' : 'participant',
         full_name: `${formData.get('firstName')} ${formData.get('lastName')}`,
-        category: participantCategory
+        category: participantCategory,
+        referral_code: formData.get('referralCode') as string,
       }
     }
   });
@@ -28,5 +29,6 @@ export async function registerParticipant(prevState: any, formData: FormData) {
     return { error: error.message };
   }
 
+  // Supabase sends a confirmation email.
   redirect('/login?message=registration-success');
 }

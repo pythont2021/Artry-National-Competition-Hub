@@ -43,35 +43,40 @@ const boards = [
       { value: "nios", label: "National Institute of Open Schooling (NIOS)" },
     ],
   },
-  { heading: "Andhra Pradesh", options: [{ value: "bseap", label: "Board of Secondary Education, Andhra Pradesh" }] },
-  { heading: "Arunachal Pradesh", options: [{ value: "dseap", label: "Directorate of School Education, Arunachal Pradesh" }] },
-  { heading: "Assam", options: [{ value: "seba", label: "Board of Secondary Education, Assam (SEBA)" }] },
-  { heading: "Bihar", options: [{ value: "bseb", label: "Bihar School Examination Board (BSEB)" }] },
-  { heading: "Chhattisgarh", options: [{ value: "cgbse", label: "Chhattisgarh Board of Secondary Education (CGBSE)" }] },
-  { heading: "Goa", options: [{ value: "gbshse", label: "Goa Board of Secondary & Higher Secondary Education" }] },
-  { heading: "Gujarat", options: [{ value: "gseb", label: "Gujarat Secondary & Higher Secondary Education Board (GSEB)" }] },
-  { heading: "Haryana", options: [{ value: "bseh", label: "Board of School Education Haryana (BSEH)" }] },
-  { heading: "Himachal Pradesh", options: [{ value: "hpbose", label: "Himachal Pradesh Board of School Education (HPBOSE)" }] },
-  { heading: "Jammu and Kashmir", options: [{ value: "jkbose", label: "Jammu and Kashmir State Board of School Education (JKBOSE)" }] },
-  { heading: "Jharkhand", options: [{ value: "jac", label: "Jharkhand Academic Council (JAC)" }] },
-  { heading: "Karnataka", options: [{ value: "kseab", label: "Karnataka School Examination and Assessment Board (KSEAB)" }] },
-  { heading: "Kerala", options: [{ value: "kbpe", label: "Kerala Board of Public Examinations (KBPE)" }] },
-  { heading: "Madhya Pradesh", options: [{ value: "mpbse", label: "Board of Secondary Education, Madhya Pradesh (MPBSE)" }] },
-  { heading: "Maharashtra", options: [{ value: "msbshse", label: "Maharashtra State Board of Secondary & Higher Secondary Education" }] },
-  { heading: "Manipur", options: [{ value: "bsem", label: "Board of Secondary Education, Manipur (BSEM)" }] },
-  { heading: "Meghalaya", options: [{ value: "mbose", label: "Meghalaya Board of School Education (MBOSE)" }] },
-  { heading: "Mizoram", options: [{ value: "mbse", label: "Mizoram Board of School Education (MBSE)" }] },
-  { heading: "Nagaland", options: [{ value: "nbse", label: "Nagaland Board of School Education (NBSE)" }] },
-  { heading: "Odisha", options: [{ value: "bseodisha", label: "Board of Secondary Education, Odisha" }] },
-  { heading: "Punjab", options: [{ value: "pseb", label: "Punjab School Education Board (PSEB)" }] },
-  { heading: "Rajasthan", options: [{ value: "bser", label: "Board of Secondary Education, Rajasthan (BSER)" }] },
-  { heading: "Sikkim", options: [{ value: "sbse", label: "Sikkim Board of Secondary Education" }] },
-  { heading: "Tamil Nadu", options: [{ value: "dge", label: "Directorate of Government Examinations, Tamil Nadu" }] },
-  { heading: "Telangana", options: [{ value: "bsetg", label: "Board of Secondary Education, Telangana (BSE Telangana)" }] },
-  { heading: "Tripura", options: [{ value: "tbse", label: "Tripura Board of Secondary Education (TBSE)" }] },
-  { heading: "Uttar Pradesh", options: [{ value: "upmsp", label: "Uttar Pradesh Madhyamik Shiksha Parishad (UPMSP)" }] },
-  { heading: "Uttarakhand", options: [{ value: "ubse", label: "Uttarakhand Board of School Education (UBSE)" }] },
-  { heading: "West Bengal", options: [{ value: "wbbse", label: "West Bengal Board of Secondary Education (WBBSE)" }] },
+  {
+    heading: "State Boards",
+    options: [
+      { value: "bseap", label: "Board of Secondary Education, Andhra Pradesh" },
+      { value: "dseap", label: "Directorate of School Education, Arunachal Pradesh" },
+      { value: "seba", label: "Board of Secondary Education, Assam (SEBA)" },
+      { value: "bseb", label: "Bihar School Examination Board (BSEB)" },
+      { value: "cgbse", label: "Chhattisgarh Board of Secondary Education (CGBSE)" },
+      { value: "gbshse", label: "Goa Board of Secondary & Higher Secondary Education" },
+      { value: "gseb", label: "Gujarat Secondary & Higher Secondary Education Board (GSEB)" },
+      { value: "bseh", label: "Board of School Education Haryana (BSEH)" },
+      { value: "hpbose", label: "Himachal Pradesh Board of School Education (HPBOSE)" },
+      { value: "jkbose", label: "Jammu and Kashmir State Board of School Education (JKBOSE)" },
+      { value: "jac", label: "Jharkhand Academic Council (JAC)" },
+      { value: "kseab", label: "Karnataka School Examination and Assessment Board (KSEAB)" },
+      { value: "kbpe", label: "Kerala Board of Public Examinations (KBPE)" },
+      { value: "mpbse", label: "Board of Secondary Education, Madhya Pradesh (MPBSE)" },
+      { value: "msbshse", label: "Maharashtra State Board of Secondary & Higher Secondary Education" },
+      { value: "bsem", label: "Board of Secondary Education, Manipur (BSEM)" },
+      { value: "mbose", label: "Meghalaya Board of School Education (MBOSE)" },
+      { value: "mbse", label: "Mizoram Board of School Education (MBSE)" },
+      { value: "nbse", label: "Nagaland Board of School Education (NBSE)" },
+      { value: "bseodisha", label: "Board of Secondary Education, Odisha" },
+      { value: "pseb", label: "Punjab School Education Board (PSEB)" },
+      { value: "bser", label: "Board of Secondary Education, Rajasthan (BSER)" },
+      { value: "sbse", label: "Sikkim Board of Secondary Education" },
+      { value: "dge", label: "Directorate of Government Examinations, Tamil Nadu" },
+      { value: "bsetg", label: "Board of Secondary Education, Telangana (BSE Telangana)" },
+      { value: "tbse", label: "Tripura Board of Secondary Education (TBSE)" },
+      { value: "upmsp", label: "Uttar Pradesh Madhyamik Shiksha Parishad (UPMSP)" },
+      { value: "ubse", label: "Uttarakhand Board of School Education (UBSE)" },
+      { value: "wbbse", label: "West Bengal Board of Secondary Education (WBBSE)" },
+    ],
+  },
   {
     heading: "Other / Open Boards",
     options: [
@@ -84,7 +89,7 @@ const boards = [
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
   lastName: z.string().min(1, { message: "Last name is required." }),
-  email: z.string().email({ message: "Please enter a valid email." }).optional().or(z.literal('')),
+  email: z.string().email({ message: "Please enter a valid email." }),
   mobile: z.string().regex(/^\d{10}$/, { message: "Please enter a valid 10-digit mobile number." }),
   dob: z.date({
     required_error: "A date of birth is required.",
@@ -109,20 +114,6 @@ const formSchema = z.object({
   message: "Passwords don't match",
   path: ["confirmPassword"],
 })
-.refine(
-  (data) => {
-    if (!data.dob) return true;
-    const age = differenceInYears(new Date(), data.dob);
-    if (age < 18) {
-      return !!data.email && data.email.length > 0;
-    }
-    return true;
-  },
-  {
-    message: "A parent's or guardian's email is required for participants under 18.",
-    path: ["email"],
-  }
-)
 .refine(
   (data) => {
     if (!data.dob) return true;
@@ -288,7 +279,7 @@ export default function ParticipantRegisterPage() {
                         <Input placeholder="name@example.com" {...field} />
                       </FormControl>
                       <FormDescription>
-                        A parent's email is required for participants under 18.
+                        Your email will be used for login and communication. For participants under 18, please use a parent's email.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -611,7 +602,7 @@ export default function ParticipantRegisterPage() {
                                   className="h-6 w-6"
                                   onClick={() => {
                                       field.onChange(null);
-                                      if (fileInputRef.current) {
+                                      if (fileInput-ref.current) {
                                         fileInputRef.current.value = "";
                                       }
                                       setProfilePhotoPreview(null);
