@@ -1,8 +1,9 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useFormStatus, useActionState } from "react-dom";
+import { useFormStatus } from "react-dom";
 import * as z from "zod";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -20,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Copy, RefreshCw } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useActionState } from "react";
 import { registerTeacher } from "./actions";
 
 const formSchema = z.object({
