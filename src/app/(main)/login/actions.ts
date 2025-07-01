@@ -17,7 +17,7 @@ export async function login(data: z.infer<typeof loginFormSchema>) {
 
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -26,8 +26,7 @@ export async function login(data: z.infer<typeof loginFormSchema>) {
       return { error: error.message };
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    const role = user?.user_metadata?.role || 'audience';
+    const role = authData.user?.user_metadata?.role || 'audience';
     
     const redirectTo = getDashboardLink(role);
 
