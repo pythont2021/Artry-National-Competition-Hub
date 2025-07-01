@@ -3,7 +3,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useFormStatus } from "react-dom";
 import * as z from "zod";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -39,15 +38,6 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 });
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" className="w-full" size="lg" disabled={pending}>
-      {pending ? "Creating Account..." : "Create Account"}
-    </Button>
-  );
-}
-
 
 export default function TeacherRegisterPage() {
   const { toast } = useToast();
@@ -78,6 +68,23 @@ export default function TeacherRegisterPage() {
         terms: false,
     }
   });
+
+  const { isSubmitting } = form.formState;
+
+  const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
+    const formData = new FormData();
+    for (const key in data) {
+      const value = data[key as keyof typeof data];
+      if (value !== null && value !== undefined) {
+         if (typeof value === 'boolean') {
+          formData.append(key, value ? 'true' : 'false');
+        } else {
+          formData.append(key, String(value));
+        }
+      }
+    }
+    formAction(formData);
+  };
 
   const handleGenerateCode = () => {
       const newCode = generateReferralCode();
@@ -112,7 +119,7 @@ export default function TeacherRegisterPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form action={formAction} className="space-y-6">
+            <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -232,7 +239,9 @@ export default function TeacherRegisterPage() {
                 )}
               />
 
-              <SubmitButton />
+              <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                {isSubmitting ? "Creating Account..." : "Create Account"}
+              </Button>
             </form>
           </Form>
         </CardContent>

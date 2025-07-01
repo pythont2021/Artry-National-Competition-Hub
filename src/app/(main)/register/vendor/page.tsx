@@ -3,7 +3,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useFormStatus } from "react-dom";
 import * as z from "zod";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -41,15 +40,6 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 });
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" className="w-full" size="lg" disabled={pending}>
-      {pending ? "Registering..." : "Register as Vendor"}
-    </Button>
-  );
-}
-
 
 export default function VendorRegisterPage() {
   const { toast } = useToast();
@@ -68,6 +58,23 @@ export default function VendorRegisterPage() {
       terms: false,
     },
   });
+
+  const { isSubmitting } = form.formState;
+
+  const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
+    const formData = new FormData();
+    for (const key in data) {
+      const value = data[key as keyof typeof data];
+      if (value !== null && value !== undefined) {
+         if (typeof value === 'boolean') {
+          formData.append(key, value ? 'true' : 'false');
+        } else {
+          formData.append(key, String(value));
+        }
+      }
+    }
+    formAction(formData);
+  };
 
   useEffect(() => {
     if (state?.error) {
@@ -91,7 +98,7 @@ export default function VendorRegisterPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form action={formAction} className="space-y-6">
+            <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="companyName"
@@ -215,7 +222,9 @@ export default function VendorRegisterPage() {
                 )}
               />
 
-              <SubmitButton />
+              <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                {isSubmitting ? "Registering..." : "Register as Vendor"}
+              </Button>
             </form>
           </Form>
         </CardContent>
