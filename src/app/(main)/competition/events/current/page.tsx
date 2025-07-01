@@ -1,25 +1,26 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { Event } from "@/lib/database.types";
+import { format } from "date-fns";
 
-const currentEvents = [
-  {
-    title: "Digital Art Masterclass",
-    date: "July 20, 2024",
-    time: "2:00 PM - 4:00 PM",
-    location: "Online Webinar",
-    description: "Join acclaimed digital artist Samir P. for an exclusive masterclass on advanced digital painting techniques and finding your unique style.",
-  },
-  {
-    title: "Final Submission Deadline",
-    date: "July 31, 2024",
-    time: "11:59 PM IST",
-    location: "Online Portal",
-    description: "The submission portal closes soon! Ensure your masterpieces are uploaded and your profiles are complete before the deadline.",
-  },
-];
+export const dynamic = 'force-dynamic';
 
-export default function CurrentEventsPage() {
+export default async function CurrentEventsPage() {
+  const supabase = createClient();
+  const { data: currentEvents, error } = await supabase
+    .from('events')
+    .select('*')
+    .eq('category', 'current')
+    .order('event_date', { ascending: true });
+
+  if (error) {
+    console.error("Error fetching current events:", error);
+    // You can render an error message here
+  }
+
   return (
     <div className="container mx-auto px-4 py-16">
       <section className="text-center">
@@ -32,8 +33,8 @@ export default function CurrentEventsPage() {
       </section>
 
       <section className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-        {currentEvents.map((event, index) => (
-          <Card key={index} className="flex flex-col">
+        {currentEvents && currentEvents.map((event: Event) => (
+          <Card key={event.id} className="flex flex-col">
             <CardHeader>
               <CardTitle className="font-headline text-2xl">{event.title}</CardTitle>
               <CardDescription className="font-body pt-2">{event.description}</CardDescription>
@@ -41,22 +42,29 @@ export default function CurrentEventsPage() {
             <CardContent className="flex-grow space-y-3 font-body">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="h-5 w-5" />
-                <span>{event.date}</span>
+                <span>{format(new Date(event.event_date), "MMMM d, yyyy")}</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Clock className="h-5 w-5" />
-                <span>{event.time}</span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-5 w-5" />
-                <span>{event.location}</span>
-              </div>
+              {event.event_time && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Clock className="h-5 w-5" />
+                  <span>{event.event_time}</span>
+                </div>
+              )}
+              {event.location && (
+                 <div className="flex items-center gap-2 text-muted-foreground">
+                  <MapPin className="h-5 w-5" />
+                  <span>{event.location}</span>
+                </div>
+              )}
             </CardContent>
             <CardFooter>
               <Button>Learn More</Button>
             </CardFooter>
           </Card>
         ))}
+         {(!currentEvents || currentEvents.length === 0) && (
+            <p className="text-center md:col-span-2 text-muted-foreground">No current events at the moment. Please check back soon!</p>
+        )}
       </section>
     </div>
   );

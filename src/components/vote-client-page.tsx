@@ -7,34 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, ThumbsUp } from "lucide-react";
+import { likeArtwork } from "@/app/(main)/competition/gallery/actions";
+import { Artwork } from "@/lib/database.types";
 
-type Artwork = {
-  id: number;
-  title: string;
-  artist: string;
-  imageUrl: string;
-  aiHint: string;
-};
-
-const initialArtworks: Artwork[] = [
-  { id: 1, title: "Cosmic Ocean", artist: "Priya S.", imageUrl: "https://images.pexels.com/photos/1209843/pexels-photo-1209843.jpeg", aiHint: "abstract space" },
-  { id: 2, title: "City in Bloom", artist: "Rohan M.", imageUrl: "https://images.pexels.com/photos/1484771/pexels-photo-1484771.jpeg", aiHint: "cityscape floral" },
-  { id: 3, title: "Silent Watcher", artist: "Aisha K.", imageUrl: "https://images.pexels.com/photos/733475/pexels-photo-733475.jpeg", aiHint: "wildlife portrait" },
-  { id: 4, title: "Forgotten Melody", artist: "Vikram R.", imageUrl: "https://images.pexels.com/photos/326501/pexels-photo-326501.jpeg", aiHint: "still life" },
-  { id: 5, title: "Sunset over Ganges", artist: "Ananya D.", imageUrl: "https://images.pexels.com/photos/2693212/pexels-photo-2693212.jpeg", aiHint: "river sunset" },
-  { id: 6, title: "Digital Dreams", artist: "Samir P.", imageUrl: "https://images.pexels.com/photos/1707215/pexels-photo-1707215.jpeg", aiHint: "surreal digital" },
-  { id: 7, title: "Market Morning", artist: "Deepa G.", imageUrl: "https://images.pexels.com/photos/262780/pexels-photo-262780.jpeg", aiHint: "market scene" },
-  { id: 8, title: "Monsoon Mist", artist: "Arjun V.", imageUrl: "https://images.pexels.com/photos/540518/pexels-photo-540518.jpeg", aiHint: "rainy landscape" },
-];
-
-export function VoteClientPage() {
-  const [artworks, setArtworks] = useState(initialArtworks);
+export function VoteClientPage({ artworks }: { artworks: Artwork[] }) {
   const [matchup, setMatchup] = useState<[Artwork, Artwork] | null>(null);
   const [voted, setVoted] = useState(false);
   const [selectedWinnerId, setSelectedWinnerId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const getNewMatchup = () => {
+    if (artworks.length < 2) {
+      return;
+    }
     let newMatchup = [...artworks].sort(() => 0.5 - Math.random()).slice(0, 2);
     if (matchup) {
         let attempts = 0;
@@ -55,9 +40,9 @@ export function VoteClientPage() {
   useEffect(() => {
     getNewMatchup();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [artworks]);
 
-  const handleVote = (winnerId: number) => {
+  const handleVote = async (winnerId: number) => {
     if (voted) {
       toast({
         variant: "destructive",
@@ -68,10 +53,20 @@ export function VoteClientPage() {
     }
     setVoted(true);
     setSelectedWinnerId(winnerId);
-    toast({
-      title: "Vote Cast!",
-      description: "Thank you for supporting our artists. Click Next to see another matchup.",
-    });
+    
+    const result = await likeArtwork(winnerId);
+     if (result?.error) {
+      toast({
+        variant: "destructive",
+        title: "Vote Failed",
+        description: result.error,
+      });
+    } else {
+       toast({
+        title: "Vote Cast!",
+        description: "Thank you for supporting our artists. Click Next to see another matchup.",
+      });
+    }
   };
 
   if (!matchup) {
@@ -92,18 +87,18 @@ export function VoteClientPage() {
       <CardHeader className="p-0">
         <div className="aspect-[3/4] overflow-hidden rounded-t-lg">
           <Image
-            src={artwork.imageUrl}
+            src={artwork.image_url}
             alt={artwork.title}
             width={600}
             height={800}
-            data-ai-hint={artwork.aiHint}
+            data-ai-hint={artwork.ai_hint || 'art'}
             className={`h-full w-full object-cover transition-transform duration-300 ${voted ? '' : 'group-hover:scale-105'}`}
           />
         </div>
       </CardHeader>
       <CardContent className="p-6 text-center">
         <CardTitle className="font-headline text-2xl">{artwork.title}</CardTitle>
-        <CardDescription className="font-body text-md mt-1">by {artwork.artist}</CardDescription>
+        <CardDescription className="font-body text-md mt-1">by {artwork.artist_name}</CardDescription>
         <Button onClick={() => handleVote(artwork.id)} disabled={voted} className="w-full mt-6">
           <ThumbsUp className="mr-2 h-4 w-4" />
           Vote for this Artwork

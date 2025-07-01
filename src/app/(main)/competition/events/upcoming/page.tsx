@@ -1,25 +1,26 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { Event } from "@/lib/database.types";
+import { format } from "date-fns";
 
-const upcomingEvents = [
-  {
-    title: "Community Voting Opens",
-    date: "August 5, 2024",
-    time: "12:00 PM IST",
-    location: "Competition Gallery",
-    description: "The gallery is open! Browse all the incredible submissions and cast your vote for the Audience Choice award. Your voice matters!",
-  },
-  {
-    title: "Expert Judging Panel",
-    date: "August 10-15, 2024",
-    time: "All Day",
-    location: "Private",
-    description: "Our distinguished panel of judges will review the shortlisted artworks to select the winners for each category. Finalists will be announced soon.",
-  },
-];
+export const dynamic = 'force-dynamic';
 
-export default function UpcomingEventsPage() {
+export default async function UpcomingEventsPage() {
+   const supabase = createClient();
+   const { data: upcomingEvents, error } = await supabase
+    .from('events')
+    .select('*')
+    .eq('category', 'upcoming')
+    .order('event_date', { ascending: true });
+
+  if (error) {
+    console.error("Error fetching upcoming events:", error);
+  }
+
+
   return (
     <div className="container mx-auto px-4 py-16">
       <section className="text-center">
@@ -32,8 +33,8 @@ export default function UpcomingEventsPage() {
       </section>
 
       <section className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-        {upcomingEvents.map((event, index) => (
-          <Card key={index} className="flex flex-col">
+        {upcomingEvents && upcomingEvents.map((event : Event) => (
+          <Card key={event.id} className="flex flex-col">
             <CardHeader>
               <CardTitle className="font-headline text-2xl">{event.title}</CardTitle>
               <CardDescription className="font-body pt-2">{event.description}</CardDescription>
@@ -41,22 +42,29 @@ export default function UpcomingEventsPage() {
             <CardContent className="flex-grow space-y-3 font-body">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="h-5 w-5" />
-                <span>{event.date}</span>
+                <span>{format(new Date(event.event_date), "MMMM d, yyyy")}</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Clock className="h-5 w-5" />
-                <span>{event.time}</span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-5 w-5" />
-                <span>{event.location}</span>
-              </div>
+              {event.event_time && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                    <Clock className="h-5 w-5" />
+                    <span>{event.event_time}</span>
+                </div>
+              )}
+              {event.location && (
+                 <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="h-5 w-5" />
+                    <span>{event.location}</span>
+                </div>
+              )}
             </CardContent>
             <CardFooter>
               <Button variant="secondary">Set Reminder</Button>
             </CardFooter>
           </Card>
         ))}
+         {(!upcomingEvents || upcomingEvents.length === 0) && (
+            <p className="text-center md:col-span-2 text-muted-foreground">No upcoming events at the moment. Please check back soon!</p>
+        )}
       </section>
     </div>
   );

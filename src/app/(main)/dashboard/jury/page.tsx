@@ -15,16 +15,26 @@ export default async function JuryDashboard() {
     redirect('/login?from=/dashboard/jury');
   }
 
-  if (user.user_metadata.role !== 'jury') {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+    
+  if (!profile || profile.role !== 'jury') {
     redirect('/login');
   }
 
-  const profile = {
-    name: user.user_metadata.full_name || "Jury Member",
+  const { data: artworks } = await supabase
+    .from('artworks')
+    .select('*');
+
+  const profileData = {
+    name: profile.full_name || "Jury Member",
     avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Jury Profile",
     details: [
-        { icon: <Briefcase className="h-4 w-4" />, label: user.user_metadata.profession || "Art Expert" },
+        { icon: <Briefcase className="h-4 w-4" />, label: profile.profession || "Art Expert" },
         { icon: <Mail className="h-4 w-4" />, label: user.email! },
     ]
   }
@@ -34,14 +44,14 @@ export default async function JuryDashboard() {
         <div className="flex flex-col lg:flex-row gap-8">
             <aside className="w-full lg:w-1/3 xl:w-1/4">
                  <ProfileCard 
-                    name={profile.name}
-                    avatarUrl={profile.avatarUrl}
-                    description={profile.description}
-                    details={profile.details}
+                    name={profileData.name}
+                    avatarUrl={profileData.avatarUrl}
+                    description={profileData.description}
+                    details={profileData.details}
                 />
             </aside>
             <main className="w-full lg:w-2/3 xl:w-3/4">
-                <JuryRatingPage />
+                <JuryRatingPage artworks={artworks || []} />
             </main>
         </div>
     </div>

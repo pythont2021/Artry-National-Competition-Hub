@@ -20,12 +20,25 @@ export default async function ArtistDashboard() {
     redirect('/login?from=/dashboard/artist');
   }
 
-  if (user.user_metadata.role !== 'artist') {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile || profile.role !== 'artist') {
+    // This will handle cases where the profile is not found or role mismatch
     redirect('/login');
   }
 
+  const { data: submissions } = await supabase
+    .from('artworks')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+
   const artist = {
-    name: user.user_metadata.full_name || "Artist",
+    name: profile.full_name || "Artist",
     avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Artist Profile",
     details: [
@@ -60,7 +73,7 @@ export default async function ArtistDashboard() {
                     <UpcomingEventsAlert />
                 </div>
                 <div className="lg:col-span-2 flex flex-col gap-8">
-                    <ArtSubmissions level={4} />
+                    <ArtSubmissions level={4} submissions={submissions || []} />
                     <AchievementsSection />
                 </div>
             </div>

@@ -1,35 +1,63 @@
+
 "use client";
 
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Users, ThumbsUp, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-
-const initialArtworks = [
-  { id: 1, title: "Cosmic Ocean", artist: "Priya S.", imageUrl: "https://images.pexels.com/photos/1209843/pexels-photo-1209843.jpeg", aiHint: "abstract space", participantLikes: 120, audienceLikes: 450, juryRating: 9 },
-  { id: 2, title: "City in Bloom", artist: "Rohan M.", imageUrl: "https://images.pexels.com/photos/1484771/pexels-photo-1484771.jpeg", aiHint: "cityscape floral", participantLikes: 95, audienceLikes: 380, juryRating: 7 },
-  { id: 3, title: "Silent Watcher", artist: "Aisha K.", imageUrl: "https://images.pexels.com/photos/733475/pexels-photo-733475.jpeg", aiHint: "wildlife portrait", participantLikes: 150, audienceLikes: 600, juryRating: 10 },
-  { id: 4, title: "Forgotten Melody", artist: "Vikram R.", imageUrl: "https://images.pexels.com/photos/326501/pexels-photo-326501.jpeg", aiHint: "still life", participantLikes: 80, audienceLikes: 250, juryRating: 6 },
-  { id: 5, title: "Sunset over Ganges", artist: "Ananya D.", imageUrl: "https://images.pexels.com/photos/2693212/pexels-photo-2693212.jpeg", aiHint: "river sunset", participantLikes: 200, audienceLikes: 800, juryRating: 10 },
-  { id: 6, title: "Digital Dreams", artist: "Samir P.", imageUrl: "https://images.pexels.com/photos/1707215/pexels-photo-1707215.jpeg", aiHint: "surreal digital", participantLikes: 180, audienceLikes: 720, juryRating: 9 },
-  { id: 7, title: "Market Morning", artist: "Deepa G.", imageUrl: "https://images.pexels.com/photos/262780/pexels-photo-262780.jpeg", aiHint: "market scene", participantLikes: 110, audienceLikes: 400, juryRating: 8 },
-  { id: 8, title: "Monsoon Mist", artist: "Arjun V.", imageUrl: "https://images.pexels.com/photos/540518/pexels-photo-540518.jpeg", aiHint: "rainy landscape", participantLikes: 130, audienceLikes: 550, juryRating: 9 },
-];
+import { likeArtwork } from "./actions";
+import { Artwork } from "@/lib/database.types";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function GalleryPage() {
-  const [artworks, setArtworks] = useState(initialArtworks);
+  const [artworks, setArtworks] = useState<Artwork[]>([]);
   const { toast } = useToast();
+  const supabase = createClient();
 
-  const handleLike = (id: number) => {
-    setArtworks(artworks.map(art => 
-      art.id === id ? { ...art, audienceLikes: art.audienceLikes + 1 } : art
-    ));
-    toast({
+  useEffect(() => {
+    const fetchArtworks = async () => {
+      const { data, error } = await supabase
+        .from('artworks')
+        .select('*')
+        .order('audience_likes', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching artworks:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not fetch artworks.',
+        });
+      } else {
+        setArtworks(data || []);
+      }
+    };
+
+    fetchArtworks();
+  }, [toast, supabase]);
+
+  const handleLike = async (id: number, title: string) => {
+    const result = await likeArtwork(id);
+    if (result?.error) {
+      toast({
+        variant: "destructive",
+        title: "Could not like artwork",
+        description: result.error,
+      });
+    } else {
+      toast({
         title: "Liked!",
-        description: "Your appreciation has been noted."
-    })
+        description: `Your appreciation for "${title}" has been noted.`,
+      });
+      // Optimistically update the UI
+      setArtworks(prevArtworks => 
+        prevArtworks.map(art => 
+          art.id === id ? { ...art, audience_likes: (art.audience_likes || 0) + 1 } : art
+        )
+      );
+    }
   };
 
   return (
@@ -49,11 +77,11 @@ export default function GalleryPage() {
             <CardHeader className="p-0">
                 <div className="aspect-[3/4] overflow-hidden">
                     <Image
-                    src={artwork.imageUrl}
+                    src={artwork.image_url}
                     alt={artwork.title}
                     width={600}
                     height={800}
-                    data-ai-hint={artwork.aiHint}
+                    data-ai-hint={artwork.ai_hint || "art"}
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                 </div>
@@ -61,27 +89,21 @@ export default function GalleryPage() {
             <CardContent className="pt-4 flex-grow flex flex-col justify-between">
               <div>
                 <CardTitle className="font-headline text-xl">{artwork.title}</CardTitle>
-                <CardDescription className="font-body text-md mt-1">by {artwork.artist}</CardDescription>
+                <CardDescription className="font-body text-md mt-1">by {artwork.artist_name}</CardDescription>
               </div>
               <div className="mt-4 border-t pt-3 space-y-2 text-sm font-body text-muted-foreground">
                 <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2"><Users className="h-4 w-4" /> Participants</span>
-                    <span className="font-semibold text-foreground">{artwork.participantLikes}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2"><ThumbsUp className="h-4 w-4" /> Audience</span>
-                    <span className="font-semibold text-foreground">{artwork.audienceLikes}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2"><Shield className="h-4 w-4" /> Jury</span>
-                    <span className="font-semibold text-foreground">{artwork.juryRating}/10</span>
+                    <span className="flex items-center gap-2"><ThumbsUp className="h-4 w-4" /> Audience Likes</span>
+                    <span className="font-semibold text-foreground">{artwork.audience_likes}</span>
                 </div>
               </div>
               <div className="mt-4">
-                  <Button variant="outline" className="w-full" onClick={() => handleLike(artwork.id)}>
-                      <ThumbsUp className="h-4 w-4" />
-                      Like
-                  </Button>
+                  <form action={() => handleLike(artwork.id, artwork.title)}>
+                      <Button variant="outline" className="w-full" type="submit">
+                          <ThumbsUp className="h-4 w-4" />
+                          Like
+                      </Button>
+                  </form>
               </div>
             </CardContent>
           </Card>

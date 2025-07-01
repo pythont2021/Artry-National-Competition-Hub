@@ -19,21 +19,32 @@ export default async function ParticipantDashboard() {
   if (!user) {
     redirect('/login?from=/dashboard/participant');
   }
+  
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
 
-  if (user.user_metadata.role !== 'participant') {
+  if (!profile || profile.role !== 'participant') {
     redirect('/login');
   }
 
+  const { data: submissions } = await supabase
+    .from('artworks')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+
   const participant = {
-    name: user.user_metadata.full_name || "Participant",
+    name: profile.full_name || "Participant",
     avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Enrolled Participant",
     details: [
-        { icon: <User className="h-4 w-4" />, label: "Senior (18-22 years)" },
+        { icon: <User className="h-4 w-4" />, label: profile.category || "Participant" },
         { icon: <GraduationCap className="h-4 w-4" />, label: "B.F.A. 2nd Year" },
         { icon: <School className="h-4 w-4" />, label: "National Institute of Design" }
-    ],
-    category: 'senior' as const
+    ]
   }
 
   return (
@@ -60,7 +71,7 @@ export default async function ParticipantDashboard() {
                     <UpcomingEventsAlert />
                 </div>
                 <div className="lg:col-span-2 flex flex-col gap-8">
-                    <ArtSubmissions level={1} />
+                    <ArtSubmissions level={1} submissions={submissions || []} />
                     <AchievementsSection />
                 </div>
             </div>

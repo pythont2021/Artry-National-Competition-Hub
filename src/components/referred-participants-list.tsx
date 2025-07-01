@@ -17,17 +17,19 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { Badge } from "./ui/badge"
 
-const referredParticipants = [
-    { name: "Priya Sharma", avatar: "https://i.pravatar.cc/150?u=Priya%20Sharma", status: "Active" },
-    { name: "Rohan Mehra", avatar: "https://i.pravatar.cc/150?u=Rohan%20Mehra", status: "Submitted" },
-    { name: "Aisha Khan", avatar: "https://i.pravatar.cc/150?u=Aisha%20Khan", status: "Active" },
-    { name: "Vikram Rathod", avatar: "https://i.pravatar.cc/150?u=Vikram%20Rathod", status: "Registered" },
-    { name: "Ananya Deshpande", avatar: "https://i.pravatar.cc/150?u=Ananya%20Deshpande", status: "Submitted" },
-    { name: "Samir Patil", avatar: "https://i.pravatar.cc/150?u=Samir%20Patil", status: "Registered" },
-    { name: "Deepa Gupta", avatar: "https://i.pravatar.cc/150?u=Deepa%20Gupta", status: "Active" },
-]
+interface ReferredParticipant {
+    full_name: string | null;
+    category: string | null;
+}
 
-export function ReferredParticipantsList() {
+export function ReferredParticipantsList({ participants }: { participants: ReferredParticipant[] }) {
+    
+    const getStatus = (category: string | null) => {
+        if (!category) return "Registered";
+        if (['junior', 'intermediate', 'senior', 'artist'].includes(category)) return "Active";
+        return "Registered";
+    }
+
     return (
         <Card className="h-full">
             <CardHeader>
@@ -43,29 +45,35 @@ export function ReferredParticipantsList() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {referredParticipants.map((participant) => (
-                            <TableRow key={participant.name}>
+                        {participants.map((participant) => (
+                            <TableRow key={participant.full_name}>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-9 w-9">
-                                            <AvatarImage src={participant.avatar} alt={participant.name} />
-                                            <AvatarFallback>{participant.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                            <AvatarImage src={`https://i.pravatar.cc/150?u=${participant.full_name}`} alt={participant.full_name || 'Participant'} />
+                                            <AvatarFallback>{(participant.full_name || 'P').split(' ').map(n => n[0]).join('')}</AvatarFallback>
                                         </Avatar>
-                                        <div className="font-medium">{participant.name}</div>
+                                        <div className="font-medium">{participant.full_name}</div>
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Badge 
                                         variant={
-                                            participant.status === "Active" ? "default" :
-                                            participant.status === "Submitted" ? "secondary" : "outline"
+                                            getStatus(participant.category) === "Active" ? "default" : "outline"
                                         }
                                     >
-                                        {participant.status}
+                                        {getStatus(participant.category)}
                                     </Badge>
                                 </TableCell>
                             </TableRow>
                         ))}
+                         {participants.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={2} className="text-center text-muted-foreground">
+                                    No participants have used your referral code yet.
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>

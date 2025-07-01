@@ -11,15 +11,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Artwork } from "@/lib/database.types";
 
-const submittedArtworks = [
-    { id: 1, title: "Cosmic Ocean", imageUrl: "https://images.pexels.com/photos/1209843/pexels-photo-1209843.jpeg", aiHint: "abstract space", status: "Judged" },
-    { id: 2, title: "City in Bloom", imageUrl: "https://images.pexels.com/photos/1484771/pexels-photo-1484771.jpeg", aiHint: "cityscape floral", status: "In Judging" },
-    { id: 3, title: "Silent Watcher", imageUrl: "https://images.pexels.com/photos/733475/pexels-photo-733475.jpeg", aiHint: "wildlife portrait", status: "Received" },
-];
-
-export function ArtSubmissions({ level }: { level: number }) {
-  const [submissions, setSubmissions] = useState(submittedArtworks);
+export function ArtSubmissions({ level, submissions }: { level: number; submissions: Artwork[] }) {
   const { toast } = useToast();
 
   const maxSubmissions = 5;
@@ -98,11 +92,11 @@ export function ArtSubmissions({ level }: { level: number }) {
             {submissions.map((art) => (
               <div key={art.id} className="group relative overflow-hidden rounded-lg">
                 <Image
-                  src={art.imageUrl}
+                  src={art.image_url}
                   alt={art.title}
                   width={400}
                   height={500}
-                  data-ai-hint={art.aiHint}
+                  data-ai-hint={art.ai_hint || 'art'}
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/60 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity">

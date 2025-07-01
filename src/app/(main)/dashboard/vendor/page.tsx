@@ -17,14 +17,20 @@ export default async function VendorDashboard() {
     redirect('/login?from=/dashboard/vendor');
   }
 
-  if (user.user_metadata.role !== 'vendor') {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile || profile.role !== 'vendor') {
     redirect('/login');
   }
 
-  const profile = {
-    name: user.user_metadata.contact_person || "Vendor",
+  const profileData = {
+    name: profile.contact_person || "Vendor",
     avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
-    description: user.user_metadata.company_name || "Creative Supplies Inc.",
+    description: profile.company_name || "Creative Supplies Inc.",
     details: [
         { icon: <Building className="h-4 w-4" />, label: "Vendor Profile" },
         { icon: <Mail className="h-4 w-4" />, label: user.email! },
@@ -35,17 +41,17 @@ export default async function VendorDashboard() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="font-headline text-4xl font-bold">Welcome, {profile.name}!</h1>
+          <h1 className="font-headline text-4xl font-bold">Welcome, {profileData.name}!</h1>
           <p className="text-muted-foreground font-body text-lg mt-2">Your Vendor Dashboard</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-1">
                 <ProfileCard 
-                    name={profile.name}
-                    avatarUrl={profile.avatarUrl}
-                    description={profile.description}
-                    details={profile.details}
+                    name={profileData.name}
+                    avatarUrl={profileData.avatarUrl}
+                    description={profileData.description}
+                    details={profileData.details}
                 />
             </div>
             <div className="md:col-span-2">

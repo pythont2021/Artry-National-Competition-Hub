@@ -17,8 +17,21 @@ export default async function AudienceDashboard() {
     redirect('/login?from=/dashboard/audience');
   }
 
-  const profile = {
-    name: user.user_metadata.full_name || "Art Enthusiast",
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+  
+  // If user has no specific role, they are audience. If profile doesnt exist, they are also treated as audience.
+  const isAudience = !profile || profile.role === 'audience';
+
+  if (!isAudience) {
+     redirect('/login');
+  }
+
+  const profileData = {
+    name: profile?.full_name || "Art Enthusiast",
     avatarUrl: `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Art Enthusiast",
     details: [
@@ -36,17 +49,17 @@ export default async function AudienceDashboard() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="font-headline text-4xl font-bold">Welcome, {profile.name}!</h1>
+          <h1 className="font-headline text-4xl font-bold">Welcome, {profileData.name}!</h1>
           <p className="text-muted-foreground font-body text-lg mt-2">Your Audience Dashboard</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="md:col-span-1 flex flex-col gap-8">
                 <ProfileCard 
-                    name={profile.name}
-                    avatarUrl={profile.avatarUrl}
-                    description={profile.description}
-                    details={profile.details}
+                    name={profileData.name}
+                    avatarUrl={profileData.avatarUrl}
+                    description={profileData.description}
+                    details={profileData.details}
                 />
                 <Card>
                     <CardHeader>
