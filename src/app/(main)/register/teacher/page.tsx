@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Copy, RefreshCw } from "lucide-react";
-import { useState, useEffect, useActionState } from "react";
+import { useState, useEffect } from "react";
 import { registerTeacher } from "./actions";
 
 const formSchema = z.object({
@@ -45,8 +45,7 @@ export default function TeacherRegisterPage() {
   const generateReferralCode = () => Math.random().toString(36).substring(2, 10).toUpperCase();
   
   const [referralCode, setReferralCode] = useState(generateReferralCode());
-  const [state, formAction] = useActionState(registerTeacher, undefined);
-
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -71,7 +70,7 @@ export default function TeacherRegisterPage() {
 
   const { isSubmitting } = form.formState;
 
-  const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
+  const handleFormSubmit = async (data: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     for (const key in data) {
       const value = data[key as keyof typeof data];
@@ -83,7 +82,16 @@ export default function TeacherRegisterPage() {
         }
       }
     }
-    formAction(formData);
+    
+    const result = await registerTeacher(formData);
+
+    if (result?.error) {
+       toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: result.error,
+      });
+    }
   };
 
   const handleGenerateCode = () => {
@@ -96,16 +104,6 @@ export default function TeacherRegisterPage() {
     navigator.clipboard.writeText(referralCode);
     toast({ description: "Referral code copied to clipboard!" });
   }
-
-  useEffect(() => {
-    if (state?.error) {
-      toast({
-        variant: "destructive",
-        title: "Registration Failed",
-        description: state.error,
-      });
-    }
-  }, [state, toast]);
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">

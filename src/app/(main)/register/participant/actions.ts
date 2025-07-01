@@ -4,7 +4,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
-export async function registerParticipant(prevState: any, formData: FormData) {
+export async function registerParticipant(formData: FormData) {
   const supabase = createClient();
 
   const email = formData.get('email') as string;

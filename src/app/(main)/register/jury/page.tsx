@@ -20,7 +20,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield } from "lucide-react";
 import { registerJury } from "./actions";
-import { useEffect, useActionState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
@@ -41,7 +40,6 @@ const formSchema = z.object({
 
 export default function JuryRegisterPage() {
   const { toast } = useToast();
-  const [state, formAction] = useActionState(registerJury, undefined);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,7 +56,7 @@ export default function JuryRegisterPage() {
 
   const { isSubmitting } = form.formState;
 
-  const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
+  const handleFormSubmit = async (data: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     for (const key in data) {
       const value = data[key as keyof typeof data];
@@ -70,18 +68,17 @@ export default function JuryRegisterPage() {
         }
       }
     }
-    formAction(formData);
-  };
 
-  useEffect(() => {
-    if (state?.error) {
+    const result = await registerJury(formData);
+
+    if (result?.error) {
       toast({
         variant: "destructive",
         title: "Registration Failed",
-        description: state.error,
+        description: result.error,
       });
     }
-  }, [state, toast]);
+  };
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">

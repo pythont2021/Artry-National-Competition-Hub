@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
-import { useEffect, useState, useRef, useActionState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { format, differenceInYears } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -134,8 +134,7 @@ export default function ParticipantRegisterPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
   const [showCategoryChoice, setShowCategoryChoice] = useState(false);
-  const [state, formAction] = useActionState(registerParticipant, undefined);
-
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -160,7 +159,7 @@ export default function ParticipantRegisterPage() {
   
   const { isSubmitting } = form.formState;
 
-  const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
+  const handleFormSubmit = async (data: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     for (const key in data) {
       const value = data[key as keyof typeof data];
@@ -176,7 +175,16 @@ export default function ParticipantRegisterPage() {
         }
       }
     }
-    formAction(formData);
+    
+    const result = await registerParticipant(formData);
+
+    if (result?.error) {
+      toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: result.error,
+      });
+    }
   };
 
   const dob = form.watch("dob");
@@ -227,16 +235,6 @@ export default function ParticipantRegisterPage() {
         setProfilePhotoPreview(null);
       }
     }, [photo]);
-
-  useEffect(() => {
-    if (state?.error) {
-      toast({
-        variant: "destructive",
-        title: "Registration Failed",
-        description: state.error,
-      });
-    }
-  }, [state, toast]);
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">

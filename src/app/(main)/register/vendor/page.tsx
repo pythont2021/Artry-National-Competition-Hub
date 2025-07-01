@@ -22,7 +22,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart } from "lucide-react";
 import { registerVendor } from "./actions";
-import { useEffect, useActionState } from "react";
 
 const formSchema = z.object({
   companyName: z.string().min(2, { message: "Company name must be at least 2 characters." }),
@@ -43,7 +42,6 @@ const formSchema = z.object({
 
 export default function VendorRegisterPage() {
   const { toast } = useToast();
-  const [state, formAction] = useActionState(registerVendor, undefined);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,7 +59,7 @@ export default function VendorRegisterPage() {
 
   const { isSubmitting } = form.formState;
 
-  const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
+  const handleFormSubmit = async (data: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     for (const key in data) {
       const value = data[key as keyof typeof data];
@@ -73,18 +71,17 @@ export default function VendorRegisterPage() {
         }
       }
     }
-    formAction(formData);
-  };
-
-  useEffect(() => {
-    if (state?.error) {
-      toast({
+    
+    const result = await registerVendor(formData);
+    
+    if (result?.error) {
+       toast({
         variant: "destructive",
         title: "Registration Failed",
-        description: state.error,
+        description: result.error,
       });
     }
-  }, [state, toast]);
+  };
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">
