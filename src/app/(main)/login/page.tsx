@@ -87,20 +87,10 @@ export default function LoginPage() {
     },
   });
   
-  const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    
-    const isValid = await loginForm.trigger();
-    if (!isValid) {
-      toast({
-        variant: "destructive",
-        title: "Invalid Details",
-        description: "Please check your email and password.",
-      });
-      return;
-    }
-
-    const formData = new FormData(event.currentTarget);
+  const handleLoginSubmit = (values: z.infer<typeof loginFormSchema>) => {
+    const formData = new FormData();
+    formData.append('email', values.email);
+    formData.append('password', values.password);
 
     startTransition(async () => {
       const result = await login(formData);
@@ -151,7 +141,7 @@ export default function LoginPage() {
             </TabsList>
             <TabsContent value="password">
                <Form {...loginForm}>
-                <form onSubmit={handleLoginSubmit} className="space-y-6 pt-4">
+                <form onSubmit={loginForm.handleSubmit(handleLoginSubmit)} className="space-y-6 pt-4">
                    <FormField
                     control={loginForm.control}
                     name="email"
