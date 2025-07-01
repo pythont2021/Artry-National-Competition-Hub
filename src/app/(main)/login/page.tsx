@@ -81,7 +81,7 @@ export default function LoginPage() {
     setIsPending(true);
 
     const formData = new FormData(event.currentTarget);
-    const result = await login(null, formData);
+    const result = await login(formData);
 
     setIsPending(false);
 
