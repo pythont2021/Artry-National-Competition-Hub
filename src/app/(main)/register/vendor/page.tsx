@@ -61,7 +61,7 @@ export default function VendorRegisterPage() {
 
   const { isSubmitting } = form.formState;
 
-  const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
+  const processForm = async (values: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
       if (typeof value === 'boolean') {
@@ -100,7 +100,10 @@ export default function VendorRegisterPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit(processForm)();
+            }} className="space-y-6">
               <FormField
                 control={form.control}
                 name="companyName"

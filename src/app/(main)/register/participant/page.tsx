@@ -110,7 +110,7 @@ const formSchema = z.object({
     .refine(
       (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
       "Only .jpg, .jpeg, .png and .webp formats are supported."
-    ).optional().or(z.literal("")),
+    ),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string(),
   terms: z.boolean().refine((val) => val === true, {
@@ -166,7 +166,7 @@ export default function ParticipantRegisterPage() {
   
   const { isSubmitting } = form.formState;
 
-  const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
+  const processForm = async (values: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     
     Object.entries(values).forEach(([key, value]) => {
@@ -259,7 +259,13 @@ export default function ParticipantRegisterPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                form.handleSubmit(processForm)();
+              }} 
+              className="space-y-6"
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
@@ -576,13 +582,14 @@ export default function ParticipantRegisterPage() {
                                         type="file"
                                         accept="image/*"
                                         className="sr-only"
+                                        id="profile-photo-input"
                                         onChange={(e) => {
                                             onChange(e.target.files);
                                         }}
                                         {...rest}
                                     />
                                   </FormControl>
-                                  <Button type="button" onClick={() => (document.querySelector('input[name="profilePhoto"]') as HTMLInputElement)?.click()}>Choose File</Button>
+                                  <Button type="button" onClick={() => document.getElementById('profile-photo-input')?.click()}>Choose File</Button>
                               </div>
                                <Alert>
                                 <Info className="h-4 w-4" />
