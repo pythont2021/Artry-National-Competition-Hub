@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getDashboardLink } from '@/lib/utils';
 import * as z from 'zod';
+import { revalidatePath } from 'next/cache';
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -26,9 +27,16 @@ export async function login(data: z.infer<typeof loginFormSchema>) {
       return { error: error.message };
     }
 
+    if (!authData.user) {
+      return { error: 'Authentication failed, user not found.' };
+    }
+
     const role = authData.user?.user_metadata?.role || 'audience';
     
     const redirectTo = getDashboardLink(role);
+
+    // Revalidate all pages to reflect the new login state
+    revalidatePath('/', 'layout');
 
     return { success: true, redirectTo };
 
@@ -44,5 +52,6 @@ export async function login(data: z.infer<typeof loginFormSchema>) {
 export async function logout() {
   const supabase = createClient();
   await supabase.auth.signOut();
+  revalidatePath('/', 'layout');
   redirect('/login?message=logout-success');
 }
