@@ -21,20 +21,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, GraduationCap, Upload, Image as ImageIcon, Info } from "lucide-react";
+import { Calendar as CalendarIcon, GraduationCap, Info } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Combobox } from "@/components/ui/combobox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
-import Image from "next/image";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/navigation";
 import { registerParticipant } from "./actions";
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const boards = [
   {
@@ -104,13 +99,6 @@ const formSchema = z.object({
   address: z.string().min(10, { message: "Address must be at least 10 characters." }),
   altContact: z.string().regex(/^\d{10}$/, { message: "Please enter a valid 10-digit mobile number." }).optional().or(z.literal('')),
   referralCode: z.string().optional(),
-  profilePhoto: z.any()
-    .refine((files) => files?.length >= 1, "Profile photo is required.")
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      "Only .jpg, .jpeg, .png and .webp formats are supported."
-    ),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string(),
   terms: z.boolean().refine((val) => val === true, {
@@ -139,7 +127,6 @@ const formSchema = z.object({
 export default function ParticipantRegisterPage() {
   const { toast } = useToast();
   const router = useRouter();
-  const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
   const [showCategoryChoice, setShowCategoryChoice] = useState(false);
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -159,7 +146,6 @@ export default function ParticipantRegisterPage() {
       terms: false,
       ageGroup: "Select date of birth to see age group.",
       participantCategory: undefined,
-      profilePhoto: undefined,
       referralCode: "",
     },
   });
@@ -170,9 +156,7 @@ export default function ParticipantRegisterPage() {
     const formData = new FormData();
     
     Object.entries(values).forEach(([key, value]) => {
-      if (key === 'profilePhoto' && value instanceof FileList) {
-        if(value.length > 0) formData.append(key, value[0]);
-      } else if (value instanceof Date) {
+      if (value instanceof Date) {
         formData.append(key, value.toISOString());
       } else if (typeof value === 'boolean') {
         formData.append(key, value.toString());
@@ -199,7 +183,6 @@ export default function ParticipantRegisterPage() {
   };
 
   const dob = form.watch("dob");
-  const photo = form.watch("profilePhoto");
 
   useEffect(() => {
     if (dob) {
@@ -234,18 +217,6 @@ export default function ParticipantRegisterPage() {
     }
   }, [dob, form]);
 
-  useEffect(() => {
-      if (photo && photo.length > 0) {
-        const file = photo[0];
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setProfilePhotoPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        setProfilePhotoPreview(null);
-      }
-    }, [photo]);
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">
@@ -547,76 +518,6 @@ export default function ParticipantRegisterPage() {
                   )}
                 />
               </div>
-
-              <FormField
-                control={form.control}
-                name="profilePhoto"
-                render={({ field: { onChange, ...rest } }) => (
-                  <FormItem>
-                    <FormLabel>Profile Photo</FormLabel>
-                    <div className="flex items-center gap-4">
-                      <Dialog>
-                          <DialogTrigger asChild>
-                              <Button type="button" variant="outline">
-                                  <Upload className="mr-2 h-4 w-4" />
-                                  {profilePhotoPreview ? "Change Photo" : "Upload Photo"}
-                              </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                              <DialogHeader>
-                                  <DialogTitle>Upload Profile Photo</DialogTitle>
-                                  <DialogDescription>
-                                      Please upload a clear, high-resolution headshot. HD images are preferred. Blurry images may be rejected.
-                                  </DialogDescription>
-                              </DialogHeader>
-                              <div className="flex flex-col items-center gap-4 py-4">
-                                  <div className="w-48 h-48 rounded-full border-2 border-dashed flex items-center justify-center bg-muted/50 overflow-hidden">
-                                      {profilePhotoPreview ? (
-                                            <Image src={profilePhotoPreview} alt="Profile preview" width={192} height={192} className="object-cover w-full h-full" />
-                                      ) : (
-                                          <ImageIcon className="h-16 w-16 text-muted-foreground" />
-                                      )}
-                                  </div>
-                                  <FormControl>
-                                    <Input
-                                        type="file"
-                                        accept="image/*"
-                                        className="sr-only"
-                                        id="profile-photo-input"
-                                        onChange={(e) => {
-                                            onChange(e.target.files);
-                                        }}
-                                        {...rest}
-                                    />
-                                  </FormControl>
-                                  <Button type="button" onClick={() => document.getElementById('profile-photo-input')?.click()}>Choose File</Button>
-                              </div>
-                               <Alert>
-                                <Info className="h-4 w-4" />
-                                <AlertTitle>Heads up!</AlertTitle>
-                                <AlertDescription>
-                                  Your profile photo will be used for upcoming certifications, awards, and achievements.
-                                </AlertDescription>
-                              </Alert>
-                              <DialogFooter className="pt-4">
-                                  <DialogClose asChild>
-                                      <Button type="button">Done</Button>
-                                  </DialogClose>
-                              </DialogFooter>
-                          </DialogContent>
-                      </Dialog>
-
-                      {profilePhotoPreview && form.getValues("profilePhoto")?.[0]?.name && (
-                          <div className="flex items-center gap-2">
-                              <Image src={profilePhotoPreview} alt="Profile thumbnail" width={40} height={40} className="rounded-full object-cover" />
-                              <span className="text-sm text-muted-foreground truncate max-w-xs">{form.getValues("profilePhoto")[0].name}</span>
-                          </div>
-                      )}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <FormField
                 control={form.control}

@@ -35,6 +35,9 @@ export async function login(data: z.infer<typeof loginFormSchema>) {
     
     const redirectTo = getDashboardLink(role);
 
+    // This is crucial to inform Next.js that the user's auth state has changed.
+    revalidatePath('/', 'layout');
+
     return { success: true, redirectTo };
 
   } catch (e: any) {
