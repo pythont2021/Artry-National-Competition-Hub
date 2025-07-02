@@ -35,9 +35,6 @@ export async function login(data: z.infer<typeof loginFormSchema>) {
     
     const redirectTo = getDashboardLink(role);
 
-    // Revalidate all pages to reflect the new login state
-    revalidatePath('/', 'layout');
-
     return { success: true, redirectTo };
 
   } catch (e: any) {
