@@ -7,7 +7,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getDashboardLink(userType?: string) {
-  const validRoles = ['artist', 'volunteer', 'jury', 'vendor', 'participant'];
+  // Participants should be redirected to the audience dashboard as their specific dashboard is not yet ready.
+  if (userType === 'participant') {
+    return "/dashboard/audience";
+  }
+
+  const validRoles = ['artist', 'volunteer', 'jury', 'vendor'];
 
   if (userType && validRoles.includes(userType)) {
       return `/dashboard/${userType}`;
