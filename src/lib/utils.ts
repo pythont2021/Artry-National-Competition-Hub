@@ -7,22 +7,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getDashboardLink(userType?: string) {
-  if (!userType) {
-    return "/login";
-  }
+  const validRoles = ['artist', 'volunteer', 'jury', 'vendor', 'participant'];
 
-  // Special case for new participants. They need to enroll.
-  // Redirect them to the audience dashboard for now.
-  if (userType === 'participant') {
-    return '/dashboard/audience';
-  }
-
-  const validRoles = ['artist', 'volunteer', 'jury', 'vendor', 'audience'];
-
-  if (validRoles.includes(userType)) {
+  if (userType && validRoles.includes(userType)) {
       return `/dashboard/${userType}`;
   }
-
-  // Fallback for any other case
-  return "/login";
+  
+  // Default to the audience dashboard for users with the 'audience' role,
+  // no role, or any other unrecognized role. This is a safe fallback.
+  return "/dashboard/audience";
 }
