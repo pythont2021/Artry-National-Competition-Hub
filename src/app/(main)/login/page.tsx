@@ -91,6 +91,8 @@ export default function LoginPage() {
     startTransition(async () => {
       const result = await login(values);
 
+      console.log(result)
+
       if (result?.error) {
         toast({
           variant: "destructive",

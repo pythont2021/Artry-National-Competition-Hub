@@ -15,9 +15,7 @@ const loginFormSchema = z.object({
 export async function login(data: z.infer<typeof loginFormSchema>) {
   try {
     const { email, password } = loginFormSchema.parse(data);
-
     const supabase = createClient();
-
     const { data: authData, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -32,23 +30,17 @@ export async function login(data: z.infer<typeof loginFormSchema>) {
     }
 
     const role = authData.user?.user_metadata?.role || 'audience';
-    
     const redirectTo = getDashboardLink(role);
-
-    // This is crucial to inform Next.js that the user's auth state has changed.
-    revalidatePath('/', 'layout');
-
     return { success: true, redirectTo };
 
   } catch (e: any) {
-    console.error('Login action error:', e);
     if (e instanceof z.ZodError) {
       return { error: "Invalid email or password format." };
     }
-    return { error: 'An unexpected server error occurred.' };
+    return { error: 'An unexpected error occurred during login.' };
   }
 }
-
+ 
 export async function logout() {
   const supabase = createClient();
   await supabase.auth.signOut();
