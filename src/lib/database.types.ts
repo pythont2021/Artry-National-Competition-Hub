@@ -1,26 +1,4 @@
 
-export type Profile = {
-  id: string;
-  full_name: string | null;
-  role: string | null;
-  category: string | null;
-  profession: string | null;
-  company_name: string | null;
-  contact_person: string | null;
-  referral_code: string | null;
-  created_at: string | null;
-  mobile: string | null;
-  dob: string | null; // Date as string
-  board: string | null;
-  school: string | null;
-  grade: string | null;
-  address: string | null;
-  alt_contact: string | null;
-  avatar_url: string | null;
-  services_offered: string | null;
-  age_group: string | null;
-};
-
 export type Artwork = {
   id: number;
   user_id: string | null;

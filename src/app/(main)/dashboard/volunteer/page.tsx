@@ -5,7 +5,6 @@ import { ProfileCard } from "@/components/profile-card";
 import { Briefcase, Mail, Star } from "lucide-react";
 import { ReferredParticipantsList } from "@/components/referred-participants-list";
 import { createClient } from "@/lib/supabase/server";
-import type { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -17,46 +16,25 @@ export default async function VolunteerDashboard() {
     redirect('/login?from=/dashboard/volunteer');
   }
 
-  // The 'profiles' table is missing. We will construct the profile from user metadata.
-  const profile: Profile = {
-    id: user.id,
-    created_at: user.created_at,
-    full_name: user.user_metadata.full_name ?? null,
-    role: user.user_metadata.role ?? null,
-    category: user.user_metadata.category ?? null,
-    profession: user.user_metadata.profession ?? null,
-    company_name: user.user_metadata.company_name ?? null,
-    contact_person: user.user_metadata.contact_person ?? null,
-    referral_code: user.user_metadata.referral_code ?? null,
-    mobile: user.user_metadata.mobile ?? null,
-    dob: user.user_metadata.dob ?? null,
-    board: user.user_metadata.board ?? null,
-    school: user.user_metadata.school ?? null,
-    grade: user.user_metadata.grade ?? null,
-    address: user.user_metadata.address ?? null,
-    alt_contact: user.user_metadata.alt_contact ?? null,
-    avatar_url: user.user_metadata.avatar_url ?? null,
-    services_offered: user.user_metadata.services_offered ?? null,
-    age_group: user.user_metadata.age_group ?? null,
-  };
+  const userRole = user.user_metadata?.role;
 
-  if (profile.role !== 'volunteer') {
+  if (userRole !== 'volunteer') {
     redirect('/login');
   }
   
-  // The query for referred participants will fail because the 'profiles' table does not exist.
+  // The query for referred participants is not possible without the 'profiles' table.
   // To prevent the page from crashing, we will return an empty array.
   // The UI component is designed to handle this gracefully.
   const referredParticipants: { full_name: string | null; category: string | null }[] = [];
 
   const profileData = {
-    name: profile.full_name || "Volunteer",
-    avatarUrl: profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
+    name: user.user_metadata.full_name || "Volunteer",
+    avatarUrl: user.user_metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Volunteer Profile",
     details: [
         { icon: <Briefcase className="h-4 w-4" />, label: "Art Teacher" },
         { icon: <Mail className="h-4 w-4" />, label: user.email! },
-        { icon: <Star className="h-4 w-4" />, label: `Referral Code: ${profile.referral_code || 'N/A'}` },
+        { icon: <Star className="h-4 w-4" />, label: `Referral Code: ${user.user_metadata.referral_code || 'N/A'}` },
     ]
   }
 

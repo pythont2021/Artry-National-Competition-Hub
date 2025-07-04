@@ -17,13 +17,12 @@ export default async function AudienceDashboard() {
     redirect('/login?from=/dashboard/audience');
   }
   
-  // The 'profiles' table is missing. We will use user metadata.
-  const profileRole = user.user_metadata.role;
+  const profileRole = user.user_metadata?.role;
 
-  // If user has no specific role, they are audience. Participants are also directed here.
-  const isAudience = !profileRole || profileRole === 'audience' || profileRole === 'participant';
-
-  if (!isAudience) {
+  // This is a safe fallback dashboard.
+  // We explicitly check if the user has a role that has a dedicated dashboard.
+  const dedicatedRoles = ['artist', 'jury', 'volunteer', 'vendor'];
+  if (profileRole && dedicatedRoles.includes(profileRole)) {
      // This case should not be hit if getDashboardLink is correct, but it's a good safeguard.
      redirect('/login');
   }
@@ -31,9 +30,9 @@ export default async function AudienceDashboard() {
   const profileData = {
     name: user.user_metadata.full_name || "Art Enthusiast",
     avatarUrl: user.user_metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
-    description: "Art Enthusiast",
+    description: "Audience Profile",
     details: [
-        { icon: <User className="h-4 w-4" />, label: "Audience Profile" },
+        { icon: <User className="h-4 w-4" />, label: "Audience" },
     ]
   }
   

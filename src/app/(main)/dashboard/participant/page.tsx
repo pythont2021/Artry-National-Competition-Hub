@@ -8,7 +8,6 @@ import { AchievementsSection } from "@/components/achievements-section";
 import { MotivationalMessage } from "@/components/motivational-message";
 import { GraduationCap, School, User, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import type { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -21,30 +20,9 @@ export default async function ParticipantDashboard() {
     redirect('/login?from=/dashboard/participant');
   }
   
-  // The 'profiles' table is missing. We will construct the profile from user metadata.
-  const profile: Profile = {
-    id: user.id,
-    created_at: user.created_at,
-    full_name: user.user_metadata.full_name ?? null,
-    role: user.user_metadata.role ?? null,
-    category: user.user_metadata.category ?? null,
-    profession: user.user_metadata.profession ?? null,
-    company_name: user.user_metadata.company_name ?? null,
-    contact_person: user.user_metadata.contact_person ?? null,
-    referral_code: user.user_metadata.referral_code ?? null,
-    mobile: user.user_metadata.mobile ?? null,
-    dob: user.user_metadata.dob ?? null,
-    board: user.user_metadata.board ?? null,
-    school: user.user_metadata.school ?? null,
-    grade: user.user_metadata.grade ?? null,
-    address: user.user_metadata.address ?? null,
-    alt_contact: user.user_metadata.alt_contact ?? null,
-    avatar_url: user.user_metadata.avatar_url ?? null,
-    services_offered: user.user_metadata.services_offered ?? null,
-    age_group: user.user_metadata.age_group ?? null,
-  };
+  const userRole = user.user_metadata?.role;
 
-  if (profile.role !== 'participant') {
+  if (userRole !== 'participant') {
     redirect('/login');
   }
 
@@ -55,14 +33,14 @@ export default async function ParticipantDashboard() {
     .order('created_at', { ascending: false });
 
   const participant = {
-    name: profile.full_name || "Participant",
-    avatarUrl: profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
+    name: user.user_metadata.full_name || "Participant",
+    avatarUrl: user.user_metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Enrolled Participant",
     details: [
-        { icon: <User className="h-4 w-4" />, label: profile.category || "Participant" },
-        { icon: <Users className="h-4 w-4" />, label: profile.age_group || "Age not specified" },
-        { icon: <GraduationCap className="h-4 w-4" />, label: profile.grade || "Not specified" },
-        { icon: <School className="h-4 w-4" />, label: profile.school || "Not specified" }
+        { icon: <User className="h-4 w-4" />, label: user.user_metadata.category || "Participant" },
+        { icon: <Users className="h-4 w-4" />, label: user.user_metadata.age_group || "Age not specified" },
+        { icon: <GraduationCap className="h-4 w-4" />, label: user.user_metadata.grade || "Not specified" },
+        { icon: <School className="h-4 w-4" />, label: user.user_metadata.school || "Not specified" }
     ]
   }
 
