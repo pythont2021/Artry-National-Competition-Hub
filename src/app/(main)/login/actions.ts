@@ -30,6 +30,8 @@ export async function login(data: z.infer<typeof loginFormSchema>) {
     }
 
     const role = authData.user?.user_metadata?.role || 'audience';
+    // const role = 'participant';
+
     const redirectTo = getDashboardLink(role);
     return { success: true, redirectTo };
 

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Paintbrush } from 'lucide-react';
 
+
 export default function FoundationHome() {
   return (
     <div className="flex flex-col min-h-screen bg-background">

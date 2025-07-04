@@ -7,9 +7,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getDashboardLink(userType?: string) {
-  // Add 'participant' to the list of roles with a dedicated dashboard.
-  const validRoles = ['artist', 'volunteer', 'jury', 'vendor', 'participant'];
+  // Consolidate 'participant' and 'artist' roles to the artist dashboard.
+  if (userType === 'participant' || userType === 'artist') {
+    return '/dashboard/artist';
+  }
 
+  const validRoles = ['volunteer', 'jury', 'vendor'];
   if (userType && validRoles.includes(userType)) {
       return `/dashboard/${userType}`;
   }

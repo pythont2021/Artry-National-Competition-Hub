@@ -6,56 +6,81 @@ import { UpcomingEventsAlert } from "@/components/upcoming-events-alert";
 import { ArtSubmissions } from "@/components/art-submissions";
 import { AchievementsSection } from "@/components/achievements-section";
 import { MotivationalMessage } from "@/components/motivational-message";
-import { User, Palette, Building } from "lucide-react";
+import { User, Palette, Building, GraduationCap, School, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import type { Profile } from "@/lib/database.types";
+import { getDashboardLink } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
 
-export default async function ArtistDashboard() {
+export default async function ArtistOrParticipantDashboard() {
   const supabase = createClient();
-
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     redirect('/login?from=/dashboard/artist');
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single<Profile>();
+    .single();
 
-  const userRole = profile?.role;
-
-  if (userRole !== 'artist') {
-    redirect('/login');
+  if (error || !profile) {
+    // Gracefully redirect to audience dashboard if profile is missing
+    return redirect('/dashboard/audience');
   }
 
+  const userRole = profile.role;
+
+  if (userRole !== 'artist' && userRole !== 'participant') {
+    // If the user is neither an artist nor a participant, send them to their correct dashboard or the fallback.
+    redirect(getDashboardLink(userRole || undefined));
+    return; // Add a return to stop execution
+  }
+  
   const { data: submissions } = await supabase
     .from('artworks')
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
-  const artist = {
-    name: profile?.full_name || "Artist",
-    avatarUrl: profile?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
-    description: "Artist Profile",
-    details: [
+  let dashboardData;
+
+  if (userRole === 'artist') {
+    dashboardData = {
+      welcomeMessage: "Ready for the Level 4 challenge? Here's your dashboard.",
+      level: 4,
+      profileDetails: [
         { icon: <User className="h-4 w-4" />, label: "Artist (18+ years)" },
-        { icon: <Palette className="h-4 w-4" />, label: "Specialty: Oil & Canvas" },
-        { icon: <Building className="h-4 w-4" />, label: "Studio in Mumbai" }
-    ],
-    category: 'artist' as const
+        { icon: <Palette className="h-4 w-4" />, label: profile.profession || "Specialty not specified" },
+        { icon: <Building className="h-4 w-4" />, label: "Studio not specified" }
+      ],
+      profileDescription: "Artist Profile"
+    }
+  } else { // 'participant'
+    dashboardData = {
+      welcomeMessage: "Here's a summary of your journey with us.",
+      level: 1, // Default level for participants
+      profileDetails: [
+        { icon: <User className="h-4 w-4" />, label: profile.category || "Participant" },
+        { icon: <Users className="h-4 w-4" />, label: profile.age_group || "Age not specified" },
+        { icon: <GraduationCap className="h-4 w-4" />, label: profile.grade || "Grade not specified" },
+        { icon: <School className="h-4 w-4" />, label: profile.school || "School not specified" }
+      ],
+      profileDescription: "Enrolled Participant"
+    }
   }
+
+  const displayName = profile.full_name || (userRole === 'artist' ? 'Artist' : 'Participant');
+  const avatarUrl = profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
+
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">Welcome, {artist.name.split(' ')[0]}!</h1>
-        <p className="text-muted-foreground font-body text-lg mt-2">Ready for the Level 4 challenge? Here's your dashboard.</p>
+        <h1 className="font-headline text-4xl font-bold">Welcome, {displayName.split(' ')[0]}!</h1>
+        <p className="text-muted-foreground font-body text-lg mt-2">{dashboardData.welcomeMessage}</p>
       </div>
 
       <Tabs defaultValue="dashboard">
@@ -67,15 +92,15 @@ export default async function ArtistDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1 flex flex-col gap-8">
                     <ProfileCard 
-                        name={artist.name}
-                        avatarUrl={artist.avatarUrl}
-                        description={artist.description}
-                        details={artist.details}
+                        name={displayName}
+                        avatarUrl={avatarUrl}
+                        description={dashboardData.profileDescription}
+                        details={dashboardData.profileDetails}
                     />
                     <UpcomingEventsAlert />
                 </div>
                 <div className="lg:col-span-2 flex flex-col gap-8">
-                    <ArtSubmissions level={4} submissions={submissions || []} />
+                    <ArtSubmissions level={dashboardData.level} submissions={submissions || []} />
                     <AchievementsSection />
                 </div>
             </div>

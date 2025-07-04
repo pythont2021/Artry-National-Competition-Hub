@@ -6,7 +6,9 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { createClient } from '@/lib/supabase/server';
 
+import { createClient as createClientClient } from '@/lib/supabase/client';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -117,6 +119,7 @@ export default function LoginPage() {
     });
   }
 
+
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">
       <Suspense fallback={<div>Loading...</div>}>
@@ -198,7 +201,21 @@ export default function LoginPage() {
               <Link href="/register" className="font-medium text-primary hover:underline">
                 Register
               </Link>
+
             </p>
+
+            <Button onClick={async () => {
+  const supabaseClient = createClientClient(); // Use the client-side createClient
+  const { data: authData, error } = await supabaseClient.auth.signInWithPassword({
+    email: "pythont2021@gmail.com",
+    password: "123456798"
+  });
+  console.log("Auth Data:", authData);
+  console.log("Error:", error);
+}}>
+  Test Participant Login
+</Button>
+
           </div>
         </CardContent>
       </Card>
