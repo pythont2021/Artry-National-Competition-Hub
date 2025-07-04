@@ -15,7 +15,6 @@ export async function registerVendor(formData: FormData) {
       password,
       options: {
         data: {
-          role: 'vendor',
           company_name: formData.get('companyName') as string,
           contact_person: formData.get('contactPerson') as string,
           mobile: formData.get('mobile') as string,

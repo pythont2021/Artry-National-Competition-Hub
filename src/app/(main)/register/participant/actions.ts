@@ -15,7 +15,6 @@ export async function registerParticipant(formData: FormData) {
     const dobForDb = dobValue ? new Date(dobValue).toISOString() : null;
 
     const userData = {
-        role: participantCategory === 'artist' ? 'artist' : 'participant',
         full_name: `${formData.get('firstName')} ${formData.get('lastName')}`,
         category: participantCategory,
         age_group: formData.get('ageGroup') as string,
