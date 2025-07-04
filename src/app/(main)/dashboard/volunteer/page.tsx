@@ -5,6 +5,7 @@ import { ProfileCard } from "@/components/profile-card";
 import { Briefcase, Mail, Star } from "lucide-react";
 import { ReferredParticipantsList } from "@/components/referred-participants-list";
 import { createClient } from "@/lib/supabase/server";
+import type { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -15,26 +16,38 @@ export default async function VolunteerDashboard() {
   if (!user) {
     redirect('/login?from=/dashboard/volunteer');
   }
+  
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single<Profile>();
 
-  const userRole = user.user_metadata?.role;
+  const userRole = profile?.role;
 
   if (userRole !== 'volunteer') {
     redirect('/login');
   }
   
-  // The query for referred participants is not possible without the 'profiles' table.
-  // To prevent the page from crashing, we will return an empty array.
-  // The UI component is designed to handle this gracefully.
-  const referredParticipants: { full_name: string | null; category: string | null }[] = [];
+  const volunteerReferralCode = profile?.referral_code;
+  let referredParticipants: { full_name: string | null; category: string | null }[] = [];
+  
+  if (volunteerReferralCode) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('full_name, category')
+      .eq('referral_code', volunteerReferralCode);
+    referredParticipants = data || [];
+  }
 
   const profileData = {
-    name: user.user_metadata.full_name || "Volunteer",
-    avatarUrl: user.user_metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
+    name: profile?.full_name || "Volunteer",
+    avatarUrl: profile?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Volunteer Profile",
     details: [
         { icon: <Briefcase className="h-4 w-4" />, label: "Art Teacher" },
         { icon: <Mail className="h-4 w-4" />, label: user.email! },
-        { icon: <Star className="h-4 w-4" />, label: `Referral Code: ${user.user_metadata.referral_code || 'N/A'}` },
+        { icon: <Star className="h-4 w-4" />, label: `Referral Code: ${volunteerReferralCode || 'N/A'}` },
     ]
   }
 

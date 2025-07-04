@@ -4,6 +4,7 @@ import { ProfileCard } from "@/components/profile-card";
 import { Shield, Briefcase, Mail } from "lucide-react";
 import { JuryRatingPage } from "@/components/jury-rating-page";
 import { createClient } from "@/lib/supabase/server";
+import type { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +16,13 @@ export default async function JuryDashboard() {
     redirect('/login?from=/dashboard/jury');
   }
 
-  const userRole = user.user_metadata?.role;
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single<Profile>();
+
+  const userRole = profile?.role;
     
   if (userRole !== 'jury') {
     redirect('/login');
@@ -26,11 +33,11 @@ export default async function JuryDashboard() {
     .select('*');
 
   const profileData = {
-    name: user.user_metadata.full_name || "Jury Member",
-    avatarUrl: user.user_metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
+    name: profile?.full_name || "Jury Member",
+    avatarUrl: profile?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Jury Profile",
     details: [
-        { icon: <Briefcase className="h-4 w-4" />, label: user.user_metadata.profession || "Art Expert" },
+        { icon: <Briefcase className="h-4 w-4" />, label: profile?.profession || "Art Expert" },
         { icon: <Mail className="h-4 w-4" />, label: user.email! },
     ]
   }

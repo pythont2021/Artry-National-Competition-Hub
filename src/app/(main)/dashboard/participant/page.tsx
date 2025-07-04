@@ -8,6 +8,7 @@ import { AchievementsSection } from "@/components/achievements-section";
 import { MotivationalMessage } from "@/components/motivational-message";
 import { GraduationCap, School, User, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import type { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,8 +20,14 @@ export default async function ParticipantDashboard() {
   if (!user) {
     redirect('/login?from=/dashboard/participant');
   }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single<Profile>();
   
-  const userRole = user.user_metadata?.role;
+  const userRole = profile?.role;
 
   if (userRole !== 'participant') {
     redirect('/login');
@@ -33,14 +40,14 @@ export default async function ParticipantDashboard() {
     .order('created_at', { ascending: false });
 
   const participant = {
-    name: user.user_metadata.full_name || "Participant",
-    avatarUrl: user.user_metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
+    name: profile?.full_name || "Participant",
+    avatarUrl: profile?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Enrolled Participant",
     details: [
-        { icon: <User className="h-4 w-4" />, label: user.user_metadata.category || "Participant" },
-        { icon: <Users className="h-4 w-4" />, label: user.user_metadata.age_group || "Age not specified" },
-        { icon: <GraduationCap className="h-4 w-4" />, label: user.user_metadata.grade || "Not specified" },
-        { icon: <School className="h-4 w-4" />, label: user.user_metadata.school || "Not specified" }
+        { icon: <User className="h-4 w-4" />, label: profile?.category || "Participant" },
+        { icon: <Users className="h-4 w-4" />, label: profile?.age_group || "Age not specified" },
+        { icon: <GraduationCap className="h-4 w-4" />, label: profile?.grade || "Not specified" },
+        { icon: <School className="h-4 w-4" />, label: profile?.school || "Not specified" }
     ]
   }
 

@@ -8,6 +8,7 @@ import { AchievementsSection } from "@/components/achievements-section";
 import { MotivationalMessage } from "@/components/motivational-message";
 import { User, Palette, Building } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import type { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,13 @@ export default async function ArtistDashboard() {
     redirect('/login?from=/dashboard/artist');
   }
 
-  const userRole = user.user_metadata?.role;
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single<Profile>();
+
+  const userRole = profile?.role;
 
   if (userRole !== 'artist') {
     redirect('/login');
@@ -33,8 +40,8 @@ export default async function ArtistDashboard() {
     .order('created_at', { ascending: false });
 
   const artist = {
-    name: user.user_metadata.full_name || "Artist",
-    avatarUrl: user.user_metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
+    name: profile?.full_name || "Artist",
+    avatarUrl: profile?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Artist Profile",
     details: [
         { icon: <User className="h-4 w-4" />, label: "Artist (18+ years)" },
