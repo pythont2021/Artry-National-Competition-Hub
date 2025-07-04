@@ -6,13 +6,15 @@ import { UpcomingEventsAlert } from "@/components/upcoming-events-alert";
 import { ArtSubmissions } from "@/components/art-submissions";
 import { AchievementsSection } from "@/components/achievements-section";
 import { MotivationalMessage } from "@/components/motivational-message";
-import { User, Palette, Building, GraduationCap, School, Users } from "lucide-react";
+import { User, Palette, Building } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getDashboardLink } from "@/lib/utils";
+import type { Profile } from "@/lib/database.types";
+
 
 export const dynamic = 'force-dynamic';
 
-export default async function ArtistOrParticipantDashboard() {
+export default async function ArtistDashboard() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -24,19 +26,12 @@ export default async function ArtistOrParticipantDashboard() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .single<Profile>();
 
-  if (error || !profile) {
-    // Gracefully redirect to audience dashboard if profile is missing
-    return redirect('/dashboard/audience');
-  }
-
-  const userRole = profile.role;
-
-  if (userRole !== 'artist' && userRole !== 'participant') {
-    // If the user is neither an artist nor a participant, send them to their correct dashboard or the fallback.
-    redirect(getDashboardLink(userRole || undefined));
-    return; // Add a return to stop execution
+  // This page is only for users with the 'artist' role.
+  // If the profile is missing or the role is not 'artist', redirect to the correct dashboard.
+  if (error || !profile || profile.role !== 'artist') {
+    return redirect(getDashboardLink(profile?.role || undefined));
   }
   
   const { data: submissions } = await supabase
@@ -45,34 +40,18 @@ export default async function ArtistOrParticipantDashboard() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
-  let dashboardData;
+  const dashboardData = {
+    welcomeMessage: "Ready for the Level 4 challenge? Here's your dashboard.",
+    level: 4,
+    profileDetails: [
+      { icon: <User className="h-4 w-4" />, label: "Artist (18+ years)" },
+      { icon: <Palette className="h-4 w-4" />, label: profile.profession || "Specialty not specified" },
+      { icon: <Building className="h-4 w-4" />, label: "Studio not specified" }
+    ],
+    profileDescription: "Artist Profile"
+  };
 
-  if (userRole === 'artist') {
-    dashboardData = {
-      welcomeMessage: "Ready for the Level 4 challenge? Here's your dashboard.",
-      level: 4,
-      profileDetails: [
-        { icon: <User className="h-4 w-4" />, label: "Artist (18+ years)" },
-        { icon: <Palette className="h-4 w-4" />, label: profile.profession || "Specialty not specified" },
-        { icon: <Building className="h-4 w-4" />, label: "Studio not specified" }
-      ],
-      profileDescription: "Artist Profile"
-    }
-  } else { // 'participant'
-    dashboardData = {
-      welcomeMessage: "Here's a summary of your journey with us.",
-      level: 1, // Default level for participants
-      profileDetails: [
-        { icon: <User className="h-4 w-4" />, label: profile.category || "Participant" },
-        { icon: <Users className="h-4 w-4" />, label: profile.age_group || "Age not specified" },
-        { icon: <GraduationCap className="h-4 w-4" />, label: profile.grade || "Grade not specified" },
-        { icon: <School className="h-4 w-4" />, label: profile.school || "School not specified" }
-      ],
-      profileDescription: "Enrolled Participant"
-    }
-  }
-
-  const displayName = profile.full_name || (userRole === 'artist' ? 'Artist' : 'Participant');
+  const displayName = profile.full_name || 'Artist';
   const avatarUrl = profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
 
 

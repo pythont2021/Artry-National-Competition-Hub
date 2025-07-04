@@ -7,8 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getDashboardLink(userType?: string) {
-  // Consolidate 'participant' and 'artist' roles to the artist dashboard.
-  if (userType === 'participant' || userType === 'artist') {
+  if (userType === 'artist') {
     return '/dashboard/artist';
   }
 
@@ -17,7 +16,7 @@ export function getDashboardLink(userType?: string) {
       return `/dashboard/${userType}`;
   }
   
-  // Default to the audience dashboard for users with the 'audience' role,
-  // no role, or any other unrecognized role. This is a safe fallback.
+  // Participant, audience, no role, or any other unrecognized role go to the audience dashboard.
+  // This makes the audience dashboard the safe default landing spot.
   return "/dashboard/audience";
 }
