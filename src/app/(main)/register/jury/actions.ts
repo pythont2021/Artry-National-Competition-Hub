@@ -18,6 +18,7 @@ export async function registerJury(formData: FormData) {
           full_name: formData.get('name') as string,
           profession: formData.get('profession') as string,
           mobile: formData.get('mobile') as string,
+          role: 'jury',
         }
       }
     });

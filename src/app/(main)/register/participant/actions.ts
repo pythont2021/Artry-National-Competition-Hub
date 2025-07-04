@@ -13,6 +13,7 @@ export async function registerParticipant(formData: FormData) {
     const dobValue = formData.get('dob') as string;
     
     const dobForDb = dobValue ? new Date(dobValue).toISOString() : null;
+    const role = participantCategory === 'artist' ? 'artist' : 'participant';
 
     const userData = {
         full_name: `${formData.get('firstName')} ${formData.get('lastName')}`,
@@ -26,6 +27,7 @@ export async function registerParticipant(formData: FormData) {
         grade: formData.get('grade') as string,
         address: formData.get('address') as string,
         alt_contact: formData.get('altContact') as string,
+        role: role,
     };
 
     // Sign up the user with all metadata.
