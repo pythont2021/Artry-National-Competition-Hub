@@ -1,3 +1,4 @@
+
 import { Paintbrush } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "./logo";
@@ -34,7 +35,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-8 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Artry National Competition Hub. A Sajre Foundation Initiative.</p>
+          <p>&copy; {new Date().getFullYear()} Artry National Competition Hub. All Rights Reserved.</p>
         </div>
       </div>
     </footer>

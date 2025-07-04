@@ -1,10 +1,11 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
   title: 'Artry National Competition Hub',
-  description: 'A platform for the Edutech National Art Competition by the Sajre Foundation.',
+  description: 'A platform for the National Art Competition.',
 };
 
 export default function RootLayout({

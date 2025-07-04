@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +17,7 @@ export default function FoundationHome() {
                 <Paintbrush className="h-8 w-8" />
               </div>
               <CardTitle className="font-headline text-4xl md:text-5xl tracking-tight">
-                Sajre Foundation
+                Artry National Competition Hub
               </CardTitle>
               <CardDescription className="text-lg md:text-xl pt-2 font-body">
                 Fostering creativity and empowering the next generation of artists.
@@ -36,7 +37,7 @@ export default function FoundationHome() {
         </div>
       </main>
       <footer className="text-center p-4 text-muted-foreground font-body">
-        © {new Date().getFullYear()} Sajre Foundation. All Rights Reserved.
+        © {new Date().getFullYear()} Artry National Competition Hub. All Rights Reserved.
       </footer>
     </div>
   );
