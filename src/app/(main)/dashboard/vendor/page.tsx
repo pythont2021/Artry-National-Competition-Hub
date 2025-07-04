@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Building, Mail, Phone, Eye } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getDashboardLink } from "@/lib/utils";
 import type { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
@@ -15,46 +16,43 @@ export default async function VendorDashboard() {
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
-    redirect('/login?from=/dashboard/vendor');
+    return redirect('/login?from=/dashboard/vendor');
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single<Profile>();
 
-  const userRole = profile?.role;
-
-  if (userRole !== 'vendor') {
-    redirect('/login');
+  if (error || !profile || profile.role !== 'vendor') {
+    return redirect(getDashboardLink(profile?.role));
   }
 
-  const profileData = {
-    name: profile?.contact_person || "Vendor",
-    avatarUrl: profile?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
-    description: profile?.company_name || "Creative Supplies Inc.",
-    details: [
-        { icon: <Building className="h-4 w-4" />, label: "Vendor Profile" },
-        { icon: <Mail className="h-4 w-4" />, label: user.email! },
-        { icon: <Phone className="h-4 w-4" />, label: profile?.mobile || "Not provided" },
-    ]
-  }
+  const displayName = profile.contact_person || "Vendor";
+  const avatarUrl = profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
+  const description = profile.company_name || "Creative Supplies Inc.";
+
+  const profileDetails = [
+      { icon: <Building className="h-4 w-4" />, label: "Vendor Profile" },
+      { icon: <Mail className="h-4 w-4" />, label: user.email! },
+      { icon: <Phone className="h-4 w-4" />, label: profile.mobile || "Not provided" },
+  ];
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="font-headline text-4xl font-bold">Welcome, {profileData.name}!</h1>
+          <h1 className="font-headline text-4xl font-bold">Welcome, {displayName}!</h1>
           <p className="text-muted-foreground font-body text-lg mt-2">Your Vendor Dashboard</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-1">
                 <ProfileCard 
-                    name={profileData.name}
-                    avatarUrl={profileData.avatarUrl}
-                    description={profileData.description}
-                    details={profileData.details}
+                    name={displayName}
+                    avatarUrl={avatarUrl}
+                    description={description}
+                    details={profileDetails}
                 />
             </div>
             <div className="md:col-span-2">

@@ -6,17 +6,29 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getDashboardLink(userType?: string) {
-  if (userType === 'artist') {
-    return '/dashboard/artist';
-  }
+/**
+ * Returns the dashboard link for a given user role.
+ * This function provides a stable and predictable routing mechanism.
+ * 
+ * @param userType The role of the user (e.g., 'artist', 'jury').
+ * @returns The absolute path to the user's dashboard.
+ */
+export function getDashboardLink(userType?: string | null): string {
+  // Define a map of roles to their specific dashboard paths.
+  const dedicatedDashboards: { [key: string]: string } = {
+    'artist': '/dashboard/artist',
+    'jury': '/dashboard/jury',
+    'volunteer': '/dashboard/volunteer',
+    'vendor': '/dashboard/vendor',
+  };
 
-  const validRoles = ['volunteer', 'jury', 'vendor'];
-  if (userType && validRoles.includes(userType)) {
-      return `/dashboard/${userType}`;
+  // If the userType exists and has a dedicated dashboard, return its path.
+  if (userType && dedicatedDashboards[userType]) {
+    return dedicatedDashboards[userType];
   }
   
-  // Participant, audience, no role, or any other unrecognized role go to the audience dashboard.
-  // This makes the audience dashboard the safe default landing spot.
+  // For all other cases (e.g., 'participant', 'audience', null, undefined, or any other role),
+  // return the safe, default audience dashboard. This prevents crashes and provides a
+  // consistent user experience for non-specialized roles.
   return "/dashboard/audience";
 }

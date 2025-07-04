@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { Badge } from "./ui/badge"
+import { Profile } from "@/lib/database.types"
 
 interface ReferredParticipant {
     full_name: string | null;
@@ -45,15 +46,15 @@ export function ReferredParticipantsList({ participants }: { participants: Refer
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {participants.map((participant) => (
-                            <TableRow key={participant.full_name}>
+                        {participants.map((participant, index) => (
+                            <TableRow key={`${participant.full_name}-${index}`}>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-9 w-9">
                                             <AvatarImage src={`https://i.pravatar.cc/150?u=${participant.full_name}`} alt={participant.full_name || 'Participant'} />
                                             <AvatarFallback>{(participant.full_name || 'P').split(' ').map(n => n[0]).join('')}</AvatarFallback>
                                         </Avatar>
-                                        <div className="font-medium">{participant.full_name}</div>
+                                        <div className="font-medium">{participant.full_name || 'Anonymous Participant'}</div>
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right">
