@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, Star } from "lucide-react";
 import { Artwork } from "@/lib/database.types";
+import { createClient } from "@/lib/supabase/client";
 
-const RatingStars = ({ onRate, artworkId }: { onRate: (artworkId: number, rating: number) => void, artworkId: number }) => {
+const RatingStars = ({ onRate, artworkId }: { onRate: (artworkId: number, rating: number) => Promise<void>, artworkId: number }) => {
     const [hoverRating, setHoverRating] = useState(0);
     const [currentRating, setCurrentRating] = useState(0);
 
@@ -32,45 +32,74 @@ const RatingStars = ({ onRate, artworkId }: { onRate: (artworkId: number, rating
     )
 }
 
-export function JuryRatingPage({ artworks }: { artworks: Artwork[] }) {
+export function JuryRatingPage({ artworks: initialArtworks }: { artworks: Artwork[] }) {
     const [currentArtwork, setCurrentArtwork] = useState<Artwork | null>(null);
     const { toast } = useToast();
+    const [ratedArtworkIds, setRatedArtworkIds] = useState<number[]>([]);
+    const [artworks, setArtworks] = useState<Artwork[]>(initialArtworks);
+    const supabase = createClient();
 
     const getNewArtwork = () => {
-        if (artworks.length === 0) return;
-        
-        let randomIndex = Math.floor(Math.random() * artworks.length);
-        let newArtwork = artworks[randomIndex];
+      if (artworks.length === 0) {
+        setCurrentArtwork(null);
+        return;
+      }
 
-        if (currentArtwork && artworks.length > 1) {
-            let attempts = 0;
-            while(newArtwork.id === currentArtwork.id) {
-                randomIndex = Math.floor(Math.random() * artworks.length);
-                newArtwork = artworks[randomIndex];
-                if(attempts > 10) break;
-                attempts++;
-            }
-        }
-        setCurrentArtwork(newArtwork);
+      const unratedArtworks = artworks.filter(artwork => !ratedArtworkIds.includes(artwork.id));
+
+      if (unratedArtworks.length === 0) {
+          setCurrentArtwork(null);
+          toast({
+              title: "All Artworks Rated",
+              description: "You have rated all artworks.",
+          });
+          return;
+      }
+  
+      const randomIndex = Math.floor(Math.random() * unratedArtworks.length);
+      setCurrentArtwork(unratedArtworks[randomIndex]);
     };
 
     useEffect(() => {
         getNewArtwork();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [artworks]);
+    }, [artworks, ratedArtworkIds]);
 
-    const handleRate = (artworkId: number, rating: number) => {
-        console.log(`Rated artwork ${artworkId} with ${rating} stars`);
-        toast({
-            title: "Rating Submitted",
-            description: `You gave "${currentArtwork?.title}" a rating of ${rating}/10.`,
-        });
-        
-        // In a real app, this would be a server action to save the rating.
-        
-        setTimeout(() => {
+    const handleRate = async (artworkId: number, rating: number) => {
+        try {
+            const { error } = await supabase
+                .from('jury_ratings')
+                .insert([{
+                    artwork_id: artworkId,
+                    rating: rating,
+                    user_id: (await supabase.auth.getUser()).data.user?.id,
+                }]);
+
+            if (error) {
+                console.error("Error submitting rating:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Rating Failed",
+                    description: "Failed to submit rating. Please try again.",
+                });
+                return;
+            }
+
+            setRatedArtworkIds(prev => [...prev, artworkId]);
+
+            toast({
+                title: "Rating Submitted",
+                description: `You gave "${currentArtwork?.title}" a rating of ${rating}/10.`, // Corrected line
+            });
             getNewArtwork();
-        }, 1500);
+
+        } catch (error: any) {
+            console.error("Error submitting rating:", error);
+            toast({
+                variant: "destructive",
+                title: "Rating Failed",
+                description: "An unexpected error occurred. Please try again.",
+            });
+        }
     };
 
     if (!currentArtwork) {

@@ -6,12 +6,44 @@ import { UpcomingEventsAlert } from "@/components/upcoming-events-alert";
 import { ArtSubmissions } from "@/components/art-submissions";
 import { AchievementsSection } from "@/components/achievements-section";
 import { MotivationalMessage } from "@/components/motivational-message";
-import { User, Palette, Building } from "lucide-react";
+import { User, Palette, Award, FileDown, Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getDashboardLink } from "@/lib/utils";
-import type { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
+
+const getProfileDetails = (metadata: any) => {
+  if (!metadata || metadata.role !== 'artist') {
+    return [];
+  }
+  return [
+    { icon: <User className="h-4 w-4" />, label: "Artist (18+ years)" },
+    { icon: <Palette className="h-4 w-4" />, label: metadata.profession || "Specialty not specified" },
+    { icon: <Award className="h-4 w-4" />, label: `${metadata.achievements || 0} achievements` }
+  ];
+}
+
+const placeholderAchievements = [
+    {
+        type: 'award',
+        title: 'Level 1 Completion',
+        description: 'Successfully completed the first level of the competition.',
+        date: 'July 15, 2024',
+        icon: <Trophy className="h-5 w-5 text-yellow-500" />,
+        action: {
+            label: 'Download Certificate',
+            icon: <FileDown className="mr-2 h-4 w-4" />
+        }
+    },
+    {
+        type: 'award',
+        title: 'Community Choice Mention',
+        description: 'Recognized for outstanding audience engagement.',
+        date: 'July 20, 2024',
+        icon: <Award className="h-5 w-5 text-blue-500" />,
+    }
+];
+
 
 export default async function ArtistDashboard() {
   const supabase = createClient();
@@ -21,16 +53,11 @@ export default async function ArtistDashboard() {
     return redirect('/login?from=/dashboard/artist');
   }
 
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single<Profile>();
+  const userRole = user.user_metadata?.role;
 
-  // If the profile is missing or the role is not 'artist', redirect to the correct dashboard.
-  // This prevents crashes and handles users who might not have a profile yet.
-  if (error || !profile || profile.role !== 'artist') {
-    return redirect(getDashboardLink(profile?.role));
+  // Redirect if the user is not an artist
+  if (userRole !== 'artist') {
+    return redirect(getDashboardLink(userRole));
   }
   
   const { data: submissions } = await supabase
@@ -39,14 +66,9 @@ export default async function ArtistDashboard() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
-  const displayName = profile.full_name || 'Artist';
-  const avatarUrl = profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
-
-  const profileDetails = [
-      { icon: <User className="h-4 w-4" />, label: "Artist (18+ years)" },
-      { icon: <Palette className="h-4 w-4" />, label: profile.profession || "Specialty not specified" },
-      { icon: <Building className="h-4 w-4" />, label: "Studio not specified" }
-  ];
+  const displayName = user.user_metadata?.full_name || 'Artist';
+  const avatarUrl = user.user_metadata?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
+  const profileDetails = getProfileDetails(user.user_metadata);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -73,7 +95,7 @@ export default async function ArtistDashboard() {
                 </div>
                 <div className="lg:col-span-2 flex flex-col gap-8">
                     <ArtSubmissions level={4} submissions={submissions || []} />
-                    <AchievementsSection />
+                    <AchievementsSection achievements={placeholderAchievements} />
                 </div>
             </div>
         </TabsContent>

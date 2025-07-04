@@ -7,7 +7,6 @@ import { Building, Mail, Phone, Eye } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getDashboardLink } from "@/lib/utils";
-import type { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,24 +18,21 @@ export default async function VendorDashboard() {
     return redirect('/login?from=/dashboard/vendor');
   }
 
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single<Profile>();
+  const userRole = user.user_metadata?.role;
 
-  if (error || !profile || profile.role !== 'vendor') {
-    return redirect(getDashboardLink(profile?.role));
+  if (userRole !== 'vendor') {
+    return redirect(getDashboardLink(userRole));
   }
 
-  const displayName = profile.contact_person || "Vendor";
-  const avatarUrl = profile.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
-  const description = profile.company_name || "Creative Supplies Inc.";
+  const displayName = user.user_metadata?.contact_person || "Vendor";
+  const avatarUrl = user.user_metadata?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
+  const description = user.user_metadata?.company_name || "Creative Supplies Inc.";
+  const mobile = user.user_metadata?.mobile || "Not provided";
 
   const profileDetails = [
       { icon: <Building className="h-4 w-4" />, label: "Vendor Profile" },
       { icon: <Mail className="h-4 w-4" />, label: user.email! },
-      { icon: <Phone className="h-4 w-4" />, label: profile.mobile || "Not provided" },
+      { icon: <Phone className="h-4 w-4" />, label: mobile },
   ];
 
   return (

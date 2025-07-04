@@ -10,6 +10,21 @@ import { getDashboardLink } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
 
+const getRoleBasedData = (role?: string | null) => {
+  let welcomeMessage = "Welcome!";
+  let description = "Your central hub for all things Artry.";
+  let profileType = "Audience Profile";
+
+  if (role) {
+      const formattedRole = role.charAt(0).toUpperCase() + role.slice(1);
+      profileType = `${formattedRole} Profile`;
+      welcomeMessage = `Welcome, ${formattedRole}!`;
+      description = `Your ${formattedRole.toLowerCase()} dashboard.`;
+  }
+
+  return { welcomeMessage, description, profileType };
+}
+
 export default async function AudienceDashboard() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -18,16 +33,17 @@ export default async function AudienceDashboard() {
     return redirect('/login?from=/dashboard/audience');
   }
   
-  // This page is a safe default. However, if a user with a dedicated dashboard lands here,
-  // we redirect them to their correct page. This is a safeguard.
-  const dedicatedDashboardLink = getDashboardLink(user.user_metadata?.role);
+  const userRole = user.user_metadata?.role;
+  const dedicatedDashboardLink = getDashboardLink(userRole);
   if (dedicatedDashboardLink !== '/dashboard/audience') {
       return redirect(dedicatedDashboardLink);
   }
 
-  const displayName = user.user_metadata.full_name || "Art Enthusiast";
-  const avatarUrl = user.user_metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
-  
+  const displayName = user.user_metadata?.full_name || "Art Enthusiast";
+  const avatarUrl = user.user_metadata?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
+
+  const { welcomeMessage, description, profileType } = getRoleBasedData(userRole);
+
   const fees = [
       { category: "Junior (9-12 years)", fee: "₹299" },
       { category: "Intermediate (13-17 years)", fee: "₹599" },
@@ -38,8 +54,8 @@ export default async function AudienceDashboard() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="font-headline text-4xl font-bold">Welcome, {displayName}!</h1>
-          <p className="text-muted-foreground font-body text-lg mt-2">Your Audience & Participant Dashboard</p>
+          <h1 className="font-headline text-4xl font-bold">{welcomeMessage}</h1>
+          <p className="text-muted-foreground font-body text-lg mt-2">{description}</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
@@ -47,9 +63,9 @@ export default async function AudienceDashboard() {
                 <ProfileCard 
                     name={displayName}
                     avatarUrl={avatarUrl}
-                    description={user.user_metadata?.role ? `${user.user_metadata.role.charAt(0).toUpperCase() + user.user_metadata.role.slice(1)} Profile` : 'Audience Profile'}
+                    description={profileType}
                     details={[
-                        { icon: <User className="h-4 w-4" />, label: user.user_metadata?.role || "Audience" },
+                        { icon: <User className="h-4 w-4" />, label: userRole ? (userRole.charAt(0).toUpperCase() + userRole.slice(1)) : "Audience" },
                     ]}
                 />
                 <Card>
@@ -92,7 +108,7 @@ export default async function AudienceDashboard() {
                                 <li key={item.category} className="flex justify-between items-center font-body">
                                     <span>{item.category}</span>
                                     <span className="font-bold font-headline">{item.fee}</span>
-                                </li>
+                                 </li>
                             ))}
                         </ul>
                     </CardContent>

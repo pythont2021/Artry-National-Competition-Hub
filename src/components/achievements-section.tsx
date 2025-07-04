@@ -2,33 +2,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Award, FileDown, Trophy } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { ReactNode } from "react";
 
-const achievements = [
-    {
-        type: 'Winner',
-        title: 'Level 1 Winner',
-        description: 'Awarded for outstanding performance in the "Traditional Painting" category.',
-        date: 'August 2024',
-        icon: <Trophy className="h-8 w-8 text-yellow-500" />,
-        action: {
-            label: 'Download Certificate',
-            icon: <FileDown className="h-4 w-4" />
-        }
-    },
-    {
-        type: 'Participation',
-        title: 'Participation Certificate',
-        description: 'Certificate for participating in the Artry National Competition 2023.',
-        date: 'September 2023',
-        icon: <Award className="h-8 w-8 text-primary" />,
-        action: {
-            label: 'Download Certificate',
-            icon: <FileDown className="h-4 w-4" />
-        }
-    }
-];
+type Achievement = {
+    type: string;
+    title: string;
+    description: string;
+    date: string;
+    icon: ReactNode;
+    action?: {
+        label: string;
+        icon: ReactNode;
+    };
+}
 
-export function AchievementsSection() {
+interface AchievementsSectionProps {
+    achievements: Achievement[];
+}
+
+export function AchievementsSection({ achievements }: AchievementsSectionProps) {
   return (
     <Card>
       <CardHeader>

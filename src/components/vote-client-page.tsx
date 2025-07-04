@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,28 +9,31 @@ import { ArrowRight, ThumbsUp } from "lucide-react";
 import { likeArtwork } from "@/app/(main)/competition/gallery/actions";
 import { Artwork } from "@/lib/database.types";
 
-export function VoteClientPage({ artworks }: { artworks: Artwork[] }) {
+export function VoteClientPage({ artworks, pageCount, currentPage }: { artworks: Artwork[]; pageCount: number; currentPage: number; }) {
   const [matchup, setMatchup] = useState<[Artwork, Artwork] | null>(null);
   const [voted, setVoted] = useState(false);
   const [selectedWinnerId, setSelectedWinnerId] = useState<number | null>(null);
+  const [votedArtworkIds, setVotedArtworkIds] = useState<number[]>([]);
   const { toast } = useToast();
 
   const getNewMatchup = () => {
     if (artworks.length < 2) {
+      setMatchup(null);
       return;
     }
-    let newMatchup = [...artworks].sort(() => 0.5 - Math.random()).slice(0, 2);
-    if (matchup) {
-        let attempts = 0;
-        while (
-            (newMatchup[0].id === matchup[0].id && newMatchup[1].id === matchup[1].id) ||
-            (newMatchup[0].id === matchup[1].id && newMatchup[1].id === matchup[0].id)
-        ) {
-            newMatchup = [...artworks].sort(() => 0.5 - Math.random()).slice(0, 2);
-            attempts++;
-            if (attempts > 10) break; 
-        }
+
+    const availableArtworks = artworks.filter(artwork => !votedArtworkIds.includes(artwork.id));
+
+    if (availableArtworks.length < 2) {
+      setMatchup(null);
+      toast({
+        title: "No More Matchups",
+        description: "You've seen all the matchups for now!",
+      });
+      return;
     }
+
+    let newMatchup = [...availableArtworks].sort(() => 0.5 - Math.random()).slice(0, 2);
     setMatchup(newMatchup as [Artwork, Artwork]);
     setVoted(false);
     setSelectedWinnerId(null);
@@ -39,8 +41,7 @@ export function VoteClientPage({ artworks }: { artworks: Artwork[] }) {
 
   useEffect(() => {
     getNewMatchup();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [artworks]);
+  }, [artworks, votedArtworkIds]);
 
   const handleVote = async (winnerId: number) => {
     if (voted) {
@@ -53,33 +54,43 @@ export function VoteClientPage({ artworks }: { artworks: Artwork[] }) {
     }
     setVoted(true);
     setSelectedWinnerId(winnerId);
-    
+    setVotedArtworkIds(prev => [...prev, matchup![0].id, matchup![1].id]);
+
+    console.log("Voting for artworkId:", winnerId);
     const result = await likeArtwork(winnerId);
-     if (result?.error) {
-      toast({
-        variant: "destructive",
-        title: "Vote Failed",
-        description: result.error,
-      });
+    if (result) {
+      if (result.error) {
+        toast({
+          variant: "destructive",
+          title: "Vote Failed",
+          description: result.error,
+        });
+      } else {
+        toast({
+          title: "Vote Cast!",
+          description: "Thank you for supporting our artists. Click Next to see another matchup.",
+        });
+      }
     } else {
-       toast({
-        title: "Vote Cast!",
-        description: "Thank you for supporting our artists. Click Next to see another matchup.",
-      });
+        toast({
+          variant: "destructive",
+          title: "Vote Failed",
+          description: "An unexpected error occurred.",
+        });
     }
   };
 
   if (!matchup) {
     return (
       <div className="container mx-auto px-4 py-16 flex justify-center items-center min-h-screen">
-        <p className="font-headline text-xl">Loading matchup...</p>
+        <p className="font-headline text-xl">No more matchups available. Please come back later!</p>
       </div>
     );
   }
 
   const ArtCard = ({ artwork, isWinner, isLoser }: { artwork: Artwork; isWinner: boolean; isLoser: boolean; }) => (
-    <Card 
-        className={`group w-full max-w-sm transition-all duration-500 ease-in-out
+    <Card
+      className={`group w-full max-w-sm transition-all duration-500 ease-in-out
         ${isWinner ? 'shadow-primary/40 shadow-2xl scale-105' : 'hover:shadow-2xl'}
         ${isLoser ? 'opacity-50 scale-95 blur-sm' : ''}
         `}
@@ -120,25 +131,25 @@ export function VoteClientPage({ artworks }: { artworks: Artwork[] }) {
         </section>
 
         <section className="flex-grow grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center justify-center gap-8 py-12">
-            <div className="flex justify-center md:justify-end">
-                <ArtCard 
-                    artwork={matchup[0]} 
-                    isWinner={voted && selectedWinnerId === matchup[0].id}
-                    isLoser={voted && selectedWinnerId !== matchup[0].id}
-                />
-            </div>
-          
-            <div className="flex justify-center font-headline text-2xl md:text-4xl text-muted-foreground my-4 md:my-0 h-16 w-16 md:h-24 md:w-24 bg-card border rounded-full items-center">
-                VS
-            </div>
+          <div className="flex justify-center md:justify-end">
+            <ArtCard
+              artwork={matchup[0]}
+              isWinner={voted && selectedWinnerId === matchup[0].id}
+              isLoser={voted && selectedWinnerId !== matchup[0].id}
+            />
+          </div>
 
-            <div className="flex justify-center md:justify-start">
-                 <ArtCard 
-                    artwork={matchup[1]} 
-                    isWinner={voted && selectedWinnerId === matchup[1].id}
-                    isLoser={voted && selectedWinnerId !== matchup[1].id}
-                />
-            </div>
+          <div className="flex justify-center font-headline text-2xl md:text-4xl text-muted-foreground my-4 md:my-0 h-16 w-16 md:h-24 md:w-24 bg-card border rounded-full items-center">
+            VS
+          </div>
+
+          <div className="flex justify-center md:justify-start">
+            <ArtCard
+              artwork={matchup[1]}
+              isWinner={voted && selectedWinnerId === matchup[1].id}
+              isLoser={voted && selectedWinnerId !== matchup[1].id}
+            />
+          </div>
         </section>
 
         <section className="mt-auto text-center h-12">

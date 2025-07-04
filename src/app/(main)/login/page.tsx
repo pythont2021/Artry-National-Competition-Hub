@@ -1,7 +1,6 @@
-
 "use client";
 
-import { Suspense, useEffect, useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
@@ -116,9 +115,7 @@ export default function LoginPage() {
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">
-      <Suspense fallback={<div>Loading...</div>}>
-        <LoginMessages />
-      </Suspense>
+      <LoginMessages />
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
            <div className="mx-auto bg-primary text-primary-foreground rounded-full p-3 w-fit mb-4">

@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Users, ThumbsUp, Shield } from "lucide-react";
+import { ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { likeArtwork } from "./actions";
@@ -14,10 +14,10 @@ import { createClient } from "@/lib/supabase/client";
 export default function GalleryPage() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const { toast } = useToast();
-  const supabase = createClient();
 
   useEffect(() => {
     const fetchArtworks = async () => {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from('artworks')
         .select('*')
@@ -36,7 +36,17 @@ export default function GalleryPage() {
     };
 
     fetchArtworks();
-  }, [toast, supabase]);
+    
+    const handleFocus = () => {
+        fetchArtworks();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+        window.removeEventListener('focus', handleFocus);
+    };
+
+  }, [toast]);
 
   const handleLike = async (id: number, title: string) => {
     const result = await likeArtwork(id);
@@ -100,7 +110,7 @@ export default function GalleryPage() {
               <div className="mt-4">
                   <form action={() => handleLike(artwork.id, artwork.title)}>
                       <Button variant="outline" className="w-full" type="submit">
-                          <ThumbsUp className="h-4 w-4" />
+                          <ThumbsUp className="h-4 w-4 mr-2" />
                           Like
                       </Button>
                   </form>
