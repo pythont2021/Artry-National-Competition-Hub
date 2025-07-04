@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, User, Ticket, GalleryHorizontal, Hand } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Profile } from "@/lib/database.types";
 
 export const dynamic = 'force-dynamic';
 
@@ -17,23 +16,21 @@ export default async function AudienceDashboard() {
   if (!user) {
     redirect('/login?from=/dashboard/audience');
   }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single<Profile>();
   
-  // If user has no specific role, they are audience. If profile doesnt exist, they are also treated as audience.
-  const isAudience = !profile || profile.role === 'audience' || profile.role === 'participant';
+  // The 'profiles' table is missing. We will use user metadata.
+  const profileRole = user.user_metadata.role;
+
+  // If user has no specific role, they are audience. Participants are also directed here.
+  const isAudience = !profileRole || profileRole === 'audience' || profileRole === 'participant';
 
   if (!isAudience) {
+     // This case should not be hit if getDashboardLink is correct, but it's a good safeguard.
      redirect('/login');
   }
 
   const profileData = {
-    name: profile?.full_name || "Art Enthusiast",
-    avatarUrl: profile?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
+    name: user.user_metadata.full_name || "Art Enthusiast",
+    avatarUrl: user.user_metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`,
     description: "Art Enthusiast",
     details: [
         { icon: <User className="h-4 w-4" />, label: "Audience Profile" },
