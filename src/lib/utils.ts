@@ -20,6 +20,7 @@ export function getDashboardLink(userType?: string | null): string {
     'jury': '/dashboard/jury',
     'volunteer': '/dashboard/volunteer',
     'vendor': '/dashboard/vendor',
+    'participant': '/dashboard/participant',
   };
 
   // If the userType exists and has a dedicated dashboard, return its path.
@@ -27,8 +28,7 @@ export function getDashboardLink(userType?: string | null): string {
     return dedicatedDashboards[userType];
   }
   
-  // For all other cases (e.g., 'participant', 'audience', null, undefined, or any other role),
-  // return the safe, default audience dashboard. This prevents crashes and provides a
-  // consistent user experience for non-specialized roles.
+  // For all other cases (e.g., 'audience', null, undefined, or any other role),
+  // return the safe, default audience dashboard.
   return "/dashboard/audience";
 }

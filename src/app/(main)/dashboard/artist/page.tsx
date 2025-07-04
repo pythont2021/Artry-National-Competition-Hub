@@ -9,19 +9,24 @@ import { MotivationalMessage } from "@/components/motivational-message";
 import { User, Palette, Award, FileDown, Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getDashboardLink } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 export const dynamic = 'force-dynamic';
 
-const getProfileDetails = (metadata: any) => {
-  if (!metadata || metadata.role !== 'artist') {
-    return [];
-  }
-  return [
-    { icon: <User className="h-4 w-4" />, label: "Artist (18+ years)" },
-    { icon: <Palette className="h-4 w-4" />, label: metadata.profession || "Specialty not specified" },
-    { icon: <Award className="h-4 w-4" />, label: `${metadata.achievements || 0} achievements` }
-  ];
-}
+const getSafeProfileData = (user: any, profile: any) => {
+    const metadata = profile || user.user_metadata || {};
+    const displayName = metadata.full_name || 'Artist';
+    const avatarUrl = metadata.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
+    
+    const details: {icon: ReactNode, label: string}[] = [
+        { icon: <User className="h-4 w-4" />, label: "Artist (18+ years)" },
+        { icon: <Palette className="h-4 w-4" />, label: metadata.profession || "Specialty not specified" },
+        { icon: <Award className="h-4 w-4" />, label: `${metadata.achievements || 0} achievements` }
+    ];
+
+    return { displayName, avatarUrl, details };
+};
+
 
 const placeholderAchievements = [
     {
@@ -54,8 +59,6 @@ export default async function ArtistDashboard() {
   }
 
   const userRole = user.user_metadata?.role;
-
-  // Redirect if the user is not an artist
   if (userRole !== 'artist') {
     return redirect(getDashboardLink(userRole));
   }
@@ -65,15 +68,21 @@ export default async function ArtistDashboard() {
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
+    
+  // Safely fetch profile from the database
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
 
-  const displayName = user.user_metadata?.full_name || 'Artist';
-  const avatarUrl = user.user_metadata?.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`;
-  const profileDetails = getProfileDetails(user.user_metadata);
+  const { displayName, avatarUrl, details } = getSafeProfileData(user, profile);
+  const welcomeName = displayName.split(' ')[0];
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">Welcome, {displayName.split(' ')[0]}!</h1>
+        <h1 className="font-headline text-4xl font-bold">Welcome, {welcomeName}!</h1>
         <p className="text-muted-foreground font-body text-lg mt-2">Ready for the Level 4 challenge? Here's your dashboard.</p>
       </div>
 
@@ -89,7 +98,7 @@ export default async function ArtistDashboard() {
                         name={displayName}
                         avatarUrl={avatarUrl}
                         description="Artist Profile"
-                        details={profileDetails}
+                        details={details}
                     />
                     <UpcomingEventsAlert />
                 </div>
